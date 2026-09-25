@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kotak Isian — Soal dari soal.csv</title>
+    <title>Kotak Isian — Batas Kesempatan</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body {
@@ -27,20 +27,34 @@
         .teks-soal {
             font-size: 1.2rem;
             color: #2c3e50;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             line-height: 1.6;
             font-weight: 500;
         }
+        .info-baris {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .indikator { color: #7f8c8d; font-size: 0.95rem; }
+        .kesempatan {
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        .kesempatan.aman { color: #2ecc71; }
+        .kesempatan.sedang { color: #f39c12; }
+        .kesempatan.berbahaya { color: #e74c3c; }
         .kotak-besar {
             display: flex;
             border: 4px solid #2c3e50;
             border-radius: 12px;
             overflow: hidden;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             width: 100%;
         }
         .kolom {
-            flex: 1; /* Semua kotak lebarnya sama rata */
+            flex: 1;
             border-right: 3px solid #2c3e50;
         }
         .kolom:last-child { border-right: none; }
@@ -58,6 +72,7 @@
         .input-kotak:focus { background: #e3f2fd; }
         .input-kotak.benar { background: #d4edda; color: #155724; }
         .input-kotak.salah { background: #f8d7da; color: #721c24; }
+        .input-kotak:disabled { cursor: not-allowed; background: #eee; }
         .tombol-group {
             display: flex;
             gap: 12px;
@@ -75,6 +90,7 @@
             transition: transform 0.2s;
         }
         .tombol:hover { transform: scale(1.05); }
+        .tombol:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .tombol-kosongkan { background: #e74c3c; color: white; }
         .tombol-periksa { background: #3498db; color: white; }
         .tombol-lanjut { background: #2ecc71; color: white; }
@@ -82,12 +98,6 @@
             display: flex;
             justify-content: space-between;
             margin-top: 20px;
-        }
-        .indikator {
-            text-align: center;
-            color: #7f8c8d;
-            margin-top: 15px;
-            font-size: 0.95rem;
         }
         .pesan {
             margin-top: 15px;
@@ -107,9 +117,13 @@
     </style>
 </head>
 <body>
-    <h1>📝 Kotak Isian</h1>
+    <h1>📝 Kotak Isian — Batas Kesempatan</h1>
     <div class="soal-box" id="area-soal" style="display: none;">
-        <div class="indikator">Soal <span id="nomor-soal">1</span> dari <span id="jumlah-soal">0</span></div>
+        <div class="info-baris">
+            <div class="indikator">Soal <span id="nomor-soal">1</span> dari <span id="jumlah-soal">0</span></div>
+            <div class="kesempatan aman" id="info-kesempatan">Kesempatan: 3 kali</div>
+        </div>
+        
         <div class="teks-soal" id="teks-soal"></div>
         
         <div class="kotak-besar" id="wadah-kotak"></div>
@@ -117,8 +131,8 @@
         <div class="pesan" id="pesan"></div>
         
         <div class="tombol-group">
-            <button class="tombol tombol-kosongkan" onclick="kosongkanSemua()">🗑️ Kosongkan</button>
-            <button class="tombol tombol-periksa" onclick="periksaJawaban()">✅ Periksa</button>
+            <button class="tombol tombol-kosongkan" id="btn-kosongkan" onclick="kosongkanSalahSaja()">🔄 Ulangi Salah</button>
+            <button class="tombol tombol-periksa" id="btn-periksa" onclick="periksaJawaban()">✅ Periksa</button>
             <button class="tombol tombol-lanjut" id="tombol-berikutnya" onclick="soalBerikutnya()" style="display: none;">➡️ Berikutnya</button>
         </div>
         
@@ -130,18 +144,20 @@
     
     <div class="muat-info" id="area-muat">
         <p>📥 Sedang memuat soal dari soal.csv...</p>
-        <p style="margin-top: 15px; font-size: 0.9rem;">Jika tidak muncul, pastikan file soal.csv sudah dibuat</p>
+        <p style="margin-top: 15px; font-size: 0.9rem;">Pastikan format: soal,jawaban,keterangan</p>
     </div>
 
 <script>
-// FORMAT soal.csv:
-// soal,jawaban,keterangan
-// Prinsip Stack?,LIFO,Last In First Out
-// Yang jawabannya DORONGAN → pastikan tertulis: DORONGAN (tanpa spasi)
+// Aturan kesempatan:
+// Jumlah kesempatan = ceil(jumlah huruf / 2)
+// 2 huruf → 1 kali, 4 → 2, 6 → 3, 8 → 4, dst.
 
 let daftarSoal = [];
 let nomor = 0;
 let sudahPeriksa = false;
+let sisaKesempatan = 0;
+let maksKesempatan = 0;
+let jawabanBenarSkrg = "";
 
 async function ambilSoal() {
     try {
@@ -149,7 +165,6 @@ async function ambilSoal() {
         if (!res.ok) throw new Error("Tidak dapat memuat soal.csv");
         const teks = await res.text();
         
-        // Parse CSV dengan penanganan spasi & kutip lebih baik
         const baris = teks.split("\n").map(r => {
             const hasil = [];
             let bagian = "", dalamKutip = false;
@@ -169,26 +184,17 @@ async function ambilSoal() {
         for (let i = 1; i < baris.length; i++) {
             const k = baris[i];
             if (!k || k.length < 2 || !k[0]) continue;
-            
-            // Bersihkan jawaban: hapus spasi & kutip, ubah ke huruf besar
-            const jawabanBersih = (k[1] || "")
-                .replace(/^"|"$/g, "")
-                .replace(/\s+/g, "") // hapus SEMUA spasi di jawaban
-                .toUpperCase()
-                .trim();
-            
             daftarSoal.push({
                 soal: k[0].replace(/^"|"$/g, ""),
-                jawaban: jawabanBersih,
+                jawaban: (k[1] || "").replace(/^"|"$/g, "").replace(/\s+/g, "").toUpperCase().trim(),
                 keterangan: k[2] ? k[2].replace(/^"|"$/g, "") : ""
             });
         }
     } catch (err) {
-        // Contoh bawaan jika soal.csv belum ada
         daftarSoal = [
-            { soal: "Prinsip kerja Stack adalah...", jawaban: "LIFO", keterangan: "Last In First Out" },
-            { soal: "Operasi menambah data ke Stack disebut...", jawaban: "PUSH", keterangan: "Menambah ke bagian atas" },
-            { soal: "Contoh soal jawaban 8 huruf...", jawaban: "DORONGAN", keterangan: "8 huruf: D-O-R-O-N-G-A-N" }
+            { soal: "Gaya yang mendorong benda disebut...", jawaban: "DORONGAN", keterangan: "8 huruf — D-O-R-O-N-G-A-N" },
+            { soal: "Satuan gaya adalah...", jawaban: "NEWTON", keterangan: "6 huruf — N-E-W-T-O-N" },
+            { soal: "Benda yang ditarik akan...", jawaban: "BERGERAK", keterangan: "8 huruf — B-E-R-G-E-R-A-K" }
         ];
     }
     
@@ -202,24 +208,26 @@ async function ambilSoal() {
 function tampilSoal() {
     sudahPeriksa = false;
     const soalSkrg = daftarSoal[nomor];
+    jawabanBenarSkrg = soalSkrg.jawaban;
     
-    // Teks soal
+    // Hitung kesempatan otomatis
+    const jumlahHuruf = jawabanBenarSkrg.length;
+    maksKesempatan = Math.ceil(jumlahHuruf / 2);
+    sisaKesempatan = maksKesempatan;
+    
+    // Tampil soal
     document.getElementById("nomor-soal").textContent = nomor + 1;
     document.getElementById("teks-soal").textContent = soalSkrg.soal;
     document.getElementById("pesan").style.display = "none";
     document.getElementById("tombol-berikutnya").style.display = "none";
     document.getElementById("tombol-sebelumnya").style.display = nomor > 0 ? "inline-block" : "none";
+    perbaruiInfoKesempatan();
     
-    // Hapus kotak lama
+    // Buat kotak
     const wadah = document.getElementById("wadah-kotak");
     wadah.innerHTML = "";
     
-    // 🔑 Kunci perbaikan: baca panjang jawaban yang sudah dibersihkan
-    const jawaban = soalSkrg.jawaban;
-    const jumlahKotak = jawaban.length;
-    
-    // Buat kotak SESUAI jumlah huruf
-    for (let i = 0; i < jumlahKotak; i++) {
+    for (let i = 0; i < jumlahHuruf; i++) {
         const kolom = document.createElement("div");
         kolom.className = "kolom";
         
@@ -229,9 +237,10 @@ function tampilSoal() {
         input.maxLength = 1;
         input.autocomplete = "off";
         input.spellcheck = false;
+        input.dataset.index = i;
         
         input.oninput = function() {
-            if (this.value && i + 1 < jumlahKotak) {
+            if (this.value && i + 1 < jumlahHuruf) {
                 document.querySelectorAll(".input-kotak")[i + 1].focus();
             }
         };
@@ -240,59 +249,111 @@ function tampilSoal() {
         wadah.appendChild(kolom);
     }
     
-    // Fokus kotak pertama
     setTimeout(() => {
         const kotakPertama = document.querySelector(".input-kotak");
         if (kotakPertama) kotakPertama.focus();
     }, 50);
 }
 
-function kosongkanSemua() {
+function perbaruiInfoKesempatan() {
+    const el = document.getElementById("info-kesempatan");
+    el.textContent = `Kesempatan: ${sisaKesempatan} kali`;
+    el.className = "kesempatan";
+    if (sisaKesempatan > maksKesempatan / 2) el.classList.add("aman");
+    else if (sisaKesempatan > 1) el.classList.add("sedang");
+    else el.classList.add("berbahaya");
+}
+
+function kosongkanSalahSaja() {
+    // Kosongkan kotak yang belum benar, biarkan yang benar tetap
     document.querySelectorAll(".input-kotak").forEach(k => {
-        k.value = "";
-        k.classList.remove("benar", "salah");
+        if (!k.classList.contains("benar")) {
+            k.value = "";
+            k.classList.remove("salah");
+            k.disabled = false;
+        }
     });
     document.getElementById("pesan").style.display = "none";
-    document.getElementById("tombol-berikutnya").style.display = "none";
     sudahPeriksa = false;
-    document.querySelector(".input-kotak").focus();
+    document.querySelector(".input-kotak:not(.benar)").focus();
 }
 
 function periksaJawaban() {
-    if (sudahPeriksa) return;
+    if (sudahPeriksa || sisaKesempatan <= 0) return;
     
-    const jawabanBenar = daftarSoal[nomor].jawaban;
-    let dijawab = "";
     const semuaKotak = document.querySelectorAll(".input-kotak");
+    let semuaBenar = true;
+    let adaIsi = false;
     
     semuaKotak.forEach((k, i) => {
+        if (k.value) adaIsi = true;
         const huruf = (k.value || "").toUpperCase();
-        dijawab += huruf;
+        const benar = huruf === jawabanBenarSkrg[i];
         
-        if (huruf === jawabanBenar[i]) {
+        if (benar) {
             k.classList.add("benar");
             k.classList.remove("salah");
-        } else {
+            k.disabled = true; // Kunci huruf yang sudah benar
+        } else if (k.value) {
             k.classList.add("salah");
             k.classList.remove("benar");
+            semuaBenar = false;
+        } else {
+            semuaBenar = false;
         }
     });
     
-    const pesanEl = document.getElementById("pesan");
-    sudahPeriksa = true;
-    
-    if (dijawab === jawabanBenar) {
-        pesanEl.textContent = "✅ BENAR! " + (daftarSoal[nomor].keterangan || "");
-        pesanEl.className = "pesan benar";
-    } else {
-        pesanEl.textContent = "❌ Belum tepat. Jawaban: " + jawabanBenar + ". " + (daftarSoal[nomor].keterangan || "");
-        pesanEl.className = "pesan salah";
+    if (!adaIsi) {
+        alert("Isi dulu kotaknya!");
+        return;
     }
     
-    if (nomor < daftarSoal.length - 1) {
-        document.getElementById("tombol-berikutnya").style.display = "inline-block";
-    } else if (dijawab === jawabanBenar) {
-        pesanEl.textContent += " 🎉 Selesai semua!";
+    sudahPeriksa = true;
+    
+    if (semuaBenar) {
+        const pesanEl = document.getElementById("pesan");
+        pesanEl.textContent = "✅ BENAR! " + (daftarSoal[nomor].keterangan || "");
+        pesanEl.className = "pesan benar";
+        document.getElementById("btn-kosongkan").disabled = true;
+        document.getElementById("btn-periksa").disabled = true;
+        
+        if (nomor < daftarSoal.length - 1) {
+            document.getElementById("tombol-berikutnya").style.display = "inline-block";
+        } else {
+            pesanEl.textContent += " 🎉 Selesai semua!";
+        }
+        return;
+    }
+    
+    // Kurangi kesempatan
+    sisaKesempatan--;
+    perbaruiInfoKesempatan();
+    
+    if (sisaKesempatan <= 0) {
+        // Tampilkan jawaban benar
+        semuaKotak.forEach((k, i) => {
+            k.value = jawabanBenarSkrg[i];
+            k.classList.add("benar");
+            k.disabled = true;
+        });
+        const pesanEl = document.getElementById("pesan");
+        pesanEl.textContent = "❌ Kesempatan habis! Jawaban: " + jawabanBenarSkrg;
+        pesanEl.className = "pesan salah";
+        document.getElementById("btn-kosongkan").disabled = true;
+        document.getElementById("btn-periksa").disabled = true;
+        
+        if (nomor < daftarSoal.length - 1) {
+            document.getElementById("tombol-berikutnya").style.display = "inline-block";
+        }
+    } else {
+        // Masih ada kesempatan — bisa perbaiki
+        const pesanEl = document.getElementById("pesan");
+        pesanEl.textContent = `⚠️ Belum tepat! Sisa kesempatan: ${sisaKesempatan} kali`;
+        pesanEl.className = "pesan salah";
+        setTimeout(() => {
+            sudahPeriksa = false;
+            document.querySelector(".input-kotak.salah").focus();
+        }, 500);
     }
 }
 
