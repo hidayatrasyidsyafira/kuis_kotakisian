@@ -215,12 +215,17 @@ function tampilSoal() {
     maksKesempatan = Math.ceil(jumlahHuruf / 2);
     sisaKesempatan = maksKesempatan;
     
-    // Tampil soal
+    // Tampil soal & AKTIFKAN TOMBOL untuk soal baru
     document.getElementById("nomor-soal").textContent = nomor + 1;
     document.getElementById("teks-soal").textContent = soalSkrg.soal;
     document.getElementById("pesan").style.display = "none";
     document.getElementById("tombol-berikutnya").style.display = "none";
     document.getElementById("tombol-sebelumnya").style.display = nomor > 0 ? "inline-block" : "none";
+    
+    // ✅ PERBAIKAN: Aktifkan kembali tombol saat pindah soal
+    document.getElementById("btn-kosongkan").disabled = false;
+    document.getElementById("btn-periksa").disabled = false;
+    
     perbaruiInfoKesempatan();
     
     // Buat kotak
@@ -265,7 +270,6 @@ function perbaruiInfoKesempatan() {
 }
 
 function kosongkanSalahSaja() {
-    // Kosongkan kotak yang belum benar, biarkan yang benar tetap
     document.querySelectorAll(".input-kotak").forEach(k => {
         if (!k.classList.contains("benar")) {
             k.value = "";
@@ -275,7 +279,8 @@ function kosongkanSalahSaja() {
     });
     document.getElementById("pesan").style.display = "none";
     sudahPeriksa = false;
-    document.querySelector(".input-kotak:not(.benar)").focus();
+    const fokus = document.querySelector(".input-kotak:not(.benar)");
+    if (fokus) fokus.focus();
 }
 
 function periksaJawaban() {
@@ -293,7 +298,7 @@ function periksaJawaban() {
         if (benar) {
             k.classList.add("benar");
             k.classList.remove("salah");
-            k.disabled = true; // Kunci huruf yang sudah benar
+            k.disabled = true;
         } else if (k.value) {
             k.classList.add("salah");
             k.classList.remove("benar");
@@ -325,12 +330,10 @@ function periksaJawaban() {
         return;
     }
     
-    // Kurangi kesempatan
     sisaKesempatan--;
     perbaruiInfoKesempatan();
     
     if (sisaKesempatan <= 0) {
-        // Tampilkan jawaban benar
         semuaKotak.forEach((k, i) => {
             k.value = jawabanBenarSkrg[i];
             k.classList.add("benar");
@@ -346,13 +349,13 @@ function periksaJawaban() {
             document.getElementById("tombol-berikutnya").style.display = "inline-block";
         }
     } else {
-        // Masih ada kesempatan — bisa perbaiki
         const pesanEl = document.getElementById("pesan");
         pesanEl.textContent = `⚠️ Belum tepat! Sisa kesempatan: ${sisaKesempatan} kali`;
         pesanEl.className = "pesan salah";
         setTimeout(() => {
             sudahPeriksa = false;
-            document.querySelector(".input-kotak.salah").focus();
+            const fokus = document.querySelector(".input-kotak.salah");
+            if (fokus) fokus.focus();
         }, 500);
     }
 }
