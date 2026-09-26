@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kotak Isian — Batas Kesempatan</title>
+    <title>Kotak Isian — Pilih Huruf A–Z</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body {
@@ -12,8 +12,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 30px;
+            padding: 30px 20px;
         }
         h1 { color: #2c3e50; margin-bottom: 20px; font-size: 1.5rem; text-align: center; }
         .soal-box {
@@ -24,33 +23,32 @@
             max-width: 750px;
             width: 100%;
         }
-        .teks-soal {
-            font-size: 1.2rem;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            line-height: 1.6;
-            font-weight: 500;
-        }
         .info-baris {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .indikator { color: #7f8c8d; font-size: 0.95rem; }
-        .kesempatan {
-            font-weight: bold;
-            font-size: 0.95rem;
-        }
+        .kesempatan { font-weight: bold; font-size: 0.95rem; }
         .kesempatan.aman { color: #2ecc71; }
         .kesempatan.sedang { color: #f39c12; }
         .kesempatan.berbahaya { color: #e74c3c; }
+        .teks-soal {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
         .kotak-besar {
             display: flex;
             border: 4px solid #2c3e50;
             border-radius: 12px;
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             width: 100%;
         }
         .kolom {
@@ -58,21 +56,54 @@
             border-right: 3px solid #2c3e50;
         }
         .kolom:last-child { border-right: none; }
-        .input-kotak {
+        .kotak {
             width: 100%;
             height: 85px;
-            border: none;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 2rem;
             font-weight: bold;
             color: #2c3e50;
-            outline: none;
-            transition: background 0.2s;
+            background: #fff;
+            transition: all 0.3s;
         }
-        .input-kotak:focus { background: #e3f2fd; }
-        .input-kotak.benar { background: #d4edda; color: #155724; }
-        .input-kotak.salah { background: #f8d7da; color: #721c24; }
-        .input-kotak:disabled { cursor: not-allowed; background: #eee; }
+        .kotak.terisi { background: #d4edda; color: #155724; }
+        .kotak.salah { background: #f8d7da; color: #721c24; }
+        /* Papan Huruf */
+        .papan-huruf {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        .btn-huruf {
+            width: 42px;
+            height: 48px;
+            border: none;
+            border-radius: 8px;
+            background: #3498db;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-huruf:hover { transform: scale(1.1); background: #2980b9; }
+        .btn-huruf.terpakai { background: #95a5a6; cursor: not-allowed; transform: none; }
+        .btn-huruf.benar { background: #2ecc71; }
+        .btn-huruf.salah { background: #e74c3c; }
+        .pesan {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        .pesan.benar { background: #d4edda; color: #155724; display: block; }
+        .pesan.salah { background: #f8d7da; color: #721c24; display: block; }
         .tombol-group {
             display: flex;
             gap: 12px;
@@ -91,24 +122,14 @@
         }
         .tombol:hover { transform: scale(1.05); }
         .tombol:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .tombol-kosongkan { background: #e74c3c; color: white; }
-        .tombol-periksa { background: #3498db; color: white; }
-        .tombol-lanjut { background: #2ecc71; color: white; }
+        .tombol-ulang { background: #f39c12; color: white; }
+        .tombol-lanjut { background: #2ecc71; color: white; display: none; }
         .nav-soal {
             display: flex;
             justify-content: space-between;
             margin-top: 20px;
         }
-        .pesan {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: bold;
-            display: none;
-        }
-        .pesan.benar { background: #d4edda; color: #155724; display: block; }
-        .pesan.salah { background: #f8d7da; color: #721c24; display: block; }
+        .tombol-mundur { background: #95a5a6; color: white; display: none; }
         .muat-info {
             text-align: center;
             color: #7f8c8d;
@@ -117,47 +138,52 @@
     </style>
 </head>
 <body>
-    <h1>📝 Kotak Isian — Batas Kesempatan</h1>
+    <h1>📝 Pilih Huruf — Isian Otomatis</h1>
     <div class="soal-box" id="area-soal" style="display: none;">
         <div class="info-baris">
             <div class="indikator">Soal <span id="nomor-soal">1</span> dari <span id="jumlah-soal">0</span></div>
-            <div class="kesempatan aman" id="info-kesempatan">Kesempatan: 3 kali</div>
+            <div class="kesempatan aman" id="info-kesempatan">Kesempatan: 0 kali</div>
         </div>
         
         <div class="teks-soal" id="teks-soal"></div>
         
         <div class="kotak-besar" id="wadah-kotak"></div>
         
+        <!-- Papan Huruf A-Z -->
+        <div class="papan-huruf" id="papan-huruf"></div>
+        
         <div class="pesan" id="pesan"></div>
         
         <div class="tombol-group">
-            <button class="tombol tombol-kosongkan" id="btn-kosongkan" onclick="kosongkanSalahSaja()">🔄 Ulangi Salah</button>
-            <button class="tombol tombol-periksa" id="btn-periksa" onclick="periksaJawaban()">✅ Periksa</button>
-            <button class="tombol tombol-lanjut" id="tombol-berikutnya" onclick="soalBerikutnya()" style="display: none;">➡️ Berikutnya</button>
+            <button class="tombol tombol-ulang" id="btn-ulang" onclick="ulangSoal()">🔄 Ulangi Soal</button>
+            <button class="tombol tombol-lanjut" id="tombol-berikutnya" onclick="soalBerikutnya()">➡️ Berikutnya</button>
         </div>
         
         <div class="nav-soal">
-            <button class="tombol" id="tombol-sebelumnya" onclick="soalSebelumnya()" style="display: none;">⬅️ Sebelumnya</button>
+            <button class="tombol tombol-mundur" id="tombol-sebelumnya" onclick="soalSebelumnya()">⬅️ Sebelumnya</button>
             <div></div>
         </div>
     </div>
     
     <div class="muat-info" id="area-muat">
         <p>📥 Sedang memuat soal dari soal.csv...</p>
-        <p style="margin-top: 15px; font-size: 0.9rem;">Pastikan format: soal,jawaban,keterangan</p>
+        <p style="margin-top: 15px; font-size: 0.9rem;">Format: soal,jawaban,keterangan</p>
     </div>
 
 <script>
-// Aturan kesempatan:
-// Jumlah kesempatan = ceil(jumlah huruf / 2)
-// 2 huruf → 1 kali, 4 → 2, 6 → 3, 8 → 4, dst.
+// Aturan:
+// - Klik huruf di papan → jika ada di jawaban, SEMUA posisi terisi otomatis
+// - Jika huruf TIDAK ada → kurangi kesempatan
+// - Kesempatan = ceil(jumlah huruf / 2)
+// - Kesempatan habis → jawaban ditampilkan
 
 let daftarSoal = [];
 let nomor = 0;
-let sudahPeriksa = false;
 let sisaKesempatan = 0;
 let maksKesempatan = 0;
-let jawabanBenarSkrg = "";
+let jawabanBenar = "";
+let hurufTerpakai = new Set();
+let sudahSelesai = false;
 
 async function ambilSoal() {
     try {
@@ -169,12 +195,9 @@ async function ambilSoal() {
             const hasil = [];
             let bagian = "", dalamKutip = false;
             for (let c of r) {
-                if (c === '"') { dalamKutip = !dalamKutip; }
-                else if (c === "," && !dalamKutip) { 
-                    hasil.push(bagian.trim()); 
-                    bagian = ""; 
-                }
-                else { bagian += c; }
+                if (c === '"') dalamKutip = !dalamKutip;
+                else if (c === "," && !dalamKutip) { hasil.push(bagian.trim()); bagian = ""; }
+                else bagian += c;
             }
             hasil.push(bagian.trim());
             return hasil;
@@ -194,7 +217,7 @@ async function ambilSoal() {
         daftarSoal = [
             { soal: "Gaya yang mendorong benda disebut...", jawaban: "DORONGAN", keterangan: "8 huruf — D-O-R-O-N-G-A-N" },
             { soal: "Satuan gaya adalah...", jawaban: "NEWTON", keterangan: "6 huruf — N-E-W-T-O-N" },
-            { soal: "Benda yang ditarik akan...", jawaban: "BERGERAK", keterangan: "8 huruf — B-E-R-G-E-R-A-K" }
+            { soal: "Prinsip kerja Stack adalah...", jawaban: "LIFO", keterangan: "Last In First Out" }
         ];
     }
     
@@ -206,58 +229,135 @@ async function ambilSoal() {
 }
 
 function tampilSoal() {
-    sudahPeriksa = false;
-    const soalSkrg = daftarSoal[nomor];
-    jawabanBenarSkrg = soalSkrg.jawaban;
+    sudahSelesai = false;
+    hurufTerpakai.clear();
+    jawabanBenar = daftarSoal[nomor].jawaban;
     
-    // Hitung kesempatan otomatis
-    const jumlahHuruf = jawabanBenarSkrg.length;
+    // Hitung kesempatan
+    const jumlahHuruf = jawabanBenar.length;
     maksKesempatan = Math.ceil(jumlahHuruf / 2);
     sisaKesempatan = maksKesempatan;
     
-    // Tampil soal & AKTIFKAN TOMBOL untuk soal baru
+    // Info soal
     document.getElementById("nomor-soal").textContent = nomor + 1;
-    document.getElementById("teks-soal").textContent = soalSkrg.soal;
+    document.getElementById("teks-soal").textContent = daftarSoal[nomor].soal;
     document.getElementById("pesan").style.display = "none";
     document.getElementById("tombol-berikutnya").style.display = "none";
     document.getElementById("tombol-sebelumnya").style.display = nomor > 0 ? "inline-block" : "none";
-    
-    // ✅ PERBAIKAN: Aktifkan kembali tombol saat pindah soal
-    document.getElementById("btn-kosongkan").disabled = false;
-    document.getElementById("btn-periksa").disabled = false;
-    
+    document.getElementById("btn-ulang").disabled = false;
     perbaruiInfoKesempatan();
     
-    // Buat kotak
+    // Buat kotak kosong
     const wadah = document.getElementById("wadah-kotak");
     wadah.innerHTML = "";
-    
     for (let i = 0; i < jumlahHuruf; i++) {
         const kolom = document.createElement("div");
         kolom.className = "kolom";
-        
-        const input = document.createElement("input");
-        input.type = "text";
-        input.className = "input-kotak";
-        input.maxLength = 1;
-        input.autocomplete = "off";
-        input.spellcheck = false;
-        input.dataset.index = i;
-        
-        input.oninput = function() {
-            if (this.value && i + 1 < jumlahHuruf) {
-                document.querySelectorAll(".input-kotak")[i + 1].focus();
-            }
-        };
-        
-        kolom.appendChild(input);
+        const kotak = document.createElement("div");
+        kotak.className = "kotak";
+        kotak.id = `kotak-${i}`;
+        kolom.appendChild(kotak);
         wadah.appendChild(kolom);
     }
     
-    setTimeout(() => {
-        const kotakPertama = document.querySelector(".input-kotak");
-        if (kotakPertama) kotakPertama.focus();
-    }, 50);
+    // Buat papan huruf A-Z
+    buatPapanHuruf();
+}
+
+function buatPapanHuruf() {
+    const papan = document.getElementById("papan-huruf");
+    papan.innerHTML = "";
+    
+    for (let kode = 65; kode <= 90; kode++) { // A sampai Z
+        const huruf = String.fromCharCode(kode);
+        const tombol = document.createElement("button");
+        tombol.className = "btn-huruf";
+        tombol.textContent = huruf;
+        tombol.id = `huruf-${huruf}`;
+        tombol.onclick = () => pilihHuruf(huruf);
+        papan.appendChild(tombol);
+    }
+}
+
+function pilihHuruf(huruf) {
+    if (sudahSelesai || hurufTerpakai.has(huruf)) return;
+    
+    hurufTerpakai.add(huruf);
+    const tombol = document.getElementById(`huruf-${huruf}`);
+    
+    if (jawabanBenar.includes(huruf)) {
+        // ✅ Huruf BENAR — isi SEMUA posisi yang sesuai
+        tombol.classList.add("benar", "terpakai");
+        
+        for (let i = 0; i < jawabanBenar.length; i++) {
+            if (jawabanBenar[i] === huruf) {
+                const kotak = document.getElementById(`kotak-${i}`);
+                kotak.textContent = huruf;
+                kotak.classList.add("terisi");
+            }
+        }
+        
+        cekSelesai();
+    } else {
+        // ❌ Huruf SALAH — kurangi kesempatan
+        tombol.classList.add("salah", "terpakai");
+        sisaKesempatan--;
+        perbaruiInfoKesempatan();
+        
+        if (sisaKesempatan <= 0) {
+            tampilkanJawabanLengkap();
+        }
+    }
+}
+
+function cekSelesai() {
+    const semuaTerisi = [...jawabanBenar].every((_, i) => {
+        const kotak = document.getElementById(`kotak-${i}`);
+        return kotak.textContent !== "";
+    });
+    
+    if (semuaTerisi) {
+        sudahSelesai = true;
+        const pesanEl = document.getElementById("pesan");
+        pesanEl.textContent = "✅ BENAR! " + (daftarSoal[nomor].keterangan || "");
+        pesanEl.className = "pesan benar";
+        document.getElementById("btn-ulang").disabled = true;
+        
+        if (nomor < daftarSoal.length - 1) {
+            document.getElementById("tombol-berikutnya").style.display = "inline-block";
+        } else {
+            pesanEl.textContent += " 🎉 Selesai semua!";
+        }
+    }
+}
+
+function tampilkanJawabanLengkap() {
+    sudahSelesai = true;
+    
+    // Isi semua kotak dengan jawaban benar
+    for (let i = 0; i < jawabanBenar.length; i++) {
+        const kotak = document.getElementById(`kotak-${i}`);
+        kotak.textContent = jawabanBenar[i];
+        kotak.classList.add("terisi");
+    }
+    
+    // Tandai huruf yang benar di papan
+    for (let kode = 65; kode <= 90; kode++) {
+        const huruf = String.fromCharCode(kode);
+        if (jawabanBenar.includes(huruf)) {
+            const tombol = document.getElementById(`huruf-${huruf}`);
+            if (tombol) tombol.classList.add("benar", "terpakai");
+        }
+    }
+    
+    const pesanEl = document.getElementById("pesan");
+    pesanEl.textContent = "❌ Kesempatan habis! Jawaban: " + jawabanBenar;
+    pesanEl.className = "pesan salah";
+    document.getElementById("btn-ulang").disabled = true;
+    
+    if (nomor < daftarSoal.length - 1) {
+        document.getElementById("tombol-berikutnya").style.display = "inline-block";
+    }
 }
 
 function perbaruiInfoKesempatan() {
@@ -269,95 +369,8 @@ function perbaruiInfoKesempatan() {
     else el.classList.add("berbahaya");
 }
 
-function kosongkanSalahSaja() {
-    document.querySelectorAll(".input-kotak").forEach(k => {
-        if (!k.classList.contains("benar")) {
-            k.value = "";
-            k.classList.remove("salah");
-            k.disabled = false;
-        }
-    });
-    document.getElementById("pesan").style.display = "none";
-    sudahPeriksa = false;
-    const fokus = document.querySelector(".input-kotak:not(.benar)");
-    if (fokus) fokus.focus();
-}
-
-function periksaJawaban() {
-    if (sudahPeriksa || sisaKesempatan <= 0) return;
-    
-    const semuaKotak = document.querySelectorAll(".input-kotak");
-    let semuaBenar = true;
-    let adaIsi = false;
-    
-    semuaKotak.forEach((k, i) => {
-        if (k.value) adaIsi = true;
-        const huruf = (k.value || "").toUpperCase();
-        const benar = huruf === jawabanBenarSkrg[i];
-        
-        if (benar) {
-            k.classList.add("benar");
-            k.classList.remove("salah");
-            k.disabled = true;
-        } else if (k.value) {
-            k.classList.add("salah");
-            k.classList.remove("benar");
-            semuaBenar = false;
-        } else {
-            semuaBenar = false;
-        }
-    });
-    
-    if (!adaIsi) {
-        alert("Isi dulu kotaknya!");
-        return;
-    }
-    
-    sudahPeriksa = true;
-    
-    if (semuaBenar) {
-        const pesanEl = document.getElementById("pesan");
-        pesanEl.textContent = "✅ BENAR! " + (daftarSoal[nomor].keterangan || "");
-        pesanEl.className = "pesan benar";
-        document.getElementById("btn-kosongkan").disabled = true;
-        document.getElementById("btn-periksa").disabled = true;
-        
-        if (nomor < daftarSoal.length - 1) {
-            document.getElementById("tombol-berikutnya").style.display = "inline-block";
-        } else {
-            pesanEl.textContent += " 🎉 Selesai semua!";
-        }
-        return;
-    }
-    
-    sisaKesempatan--;
-    perbaruiInfoKesempatan();
-    
-    if (sisaKesempatan <= 0) {
-        semuaKotak.forEach((k, i) => {
-            k.value = jawabanBenarSkrg[i];
-            k.classList.add("benar");
-            k.disabled = true;
-        });
-        const pesanEl = document.getElementById("pesan");
-        pesanEl.textContent = "❌ Kesempatan habis! Jawaban: " + jawabanBenarSkrg;
-        pesanEl.className = "pesan salah";
-        document.getElementById("btn-kosongkan").disabled = true;
-        document.getElementById("btn-periksa").disabled = true;
-        
-        if (nomor < daftarSoal.length - 1) {
-            document.getElementById("tombol-berikutnya").style.display = "inline-block";
-        }
-    } else {
-        const pesanEl = document.getElementById("pesan");
-        pesanEl.textContent = `⚠️ Belum tepat! Sisa kesempatan: ${sisaKesempatan} kali`;
-        pesanEl.className = "pesan salah";
-        setTimeout(() => {
-            sudahPeriksa = false;
-            const fokus = document.querySelector(".input-kotak.salah");
-            if (fokus) fokus.focus();
-        }, 500);
-    }
+function ulangSoal() {
+    tampilSoal();
 }
 
 function soalBerikutnya() {
