@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kotak Isian — Pilih Huruf A–Z</title>
+    <title>Kotak Isian — Hangman + Animasi</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body {
@@ -20,8 +20,20 @@
             padding: 25px 30px;
             border-radius: 16px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-            max-width: 750px;
+            max-width: 850px;
             width: 100%;
+        }
+        .atas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+        .info-area {
+            flex: 1;
+            min-width: 300px;
         }
         .info-baris {
             display: flex;
@@ -39,10 +51,112 @@
         .teks-soal {
             font-size: 1.2rem;
             color: #2c3e50;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             line-height: 1.6;
             font-weight: 500;
         }
+        /* Hangman */
+        .hangman-area {
+            width: 200px;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid #ddd;
+        }
+        .hangman {
+            position: relative;
+            width: 120px;
+            height: 200px;
+        }
+        /* Bagian Hangman — sembunyi dulu */
+        .tiang-vertikal, .tiang-melintang, .tiang-miring, .kaitan, 
+        .kepala, .badan, .lengan-kiri, .lengan-kanan, .kaki-kiri, .kaki-kanan {
+            position: absolute;
+            background: #2c3e50;
+            display: none;
+            transition: all 0.4s ease-in-out;
+        }
+        .tiang-vertikal {
+            width: 6px;
+            height: 180px;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .tiang-melintang {
+            width: 90px;
+            height: 6px;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .tiang-miring {
+            width: 65px;
+            height: 6px;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%) rotate(30deg);
+        }
+        .kaitan {
+            width: 3px;
+            height: 28px;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .kepala {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            top: 44px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #3498db;
+        }
+        .badan {
+            width: 5px;
+            height: 55px;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .lengan-kiri {
+            width: 4px;
+            height: 35px;
+            top: 88px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-45deg);
+            transform-origin: top center;
+        }
+        .lengan-kanan {
+            width: 4px;
+            height: 35px;
+            top: 88px;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            transform-origin: top center;
+        }
+        .kaki-kiri {
+            width: 4px;
+            height: 35px;
+            top: 130px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-35deg);
+            transform-origin: top center;
+        }
+        .kaki-kanan {
+            width: 4px;
+            height: 35px;
+            top: 130px;
+            left: 50%;
+            transform: translateX(-50%) rotate(35deg);
+            transform-origin: top center;
+        }
+        /* Kotak Jawaban */
         .kotak-besar {
             display: flex;
             border: 4px solid #2c3e50;
@@ -68,8 +182,17 @@
             background: #fff;
             transition: all 0.3s;
         }
-        .kotak.terisi { background: #d4edda; color: #155724; }
-        .kotak.salah { background: #f8d7da; color: #721c24; }
+        /* Animasi saat benar */
+        .kotak.terisi {
+            background: #d4edda;
+            color: #155724;
+            animation: kilauNaik 0.7s ease-out;
+        }
+        @keyframes kilauNaik {
+            0% { transform: scale(0.85); opacity: 0; }
+            50% { transform: scale(1.08); box-shadow: 0 0 15px rgba(46, 204, 113, 0.5); }
+            100% { transform: scale(1); opacity: 1; }
+        }
         /* Papan Huruf */
         .papan-huruf {
             display: flex;
@@ -138,14 +261,33 @@
     </style>
 </head>
 <body>
-    <h1>📝 Pilih Huruf — Isian Otomatis</h1>
+    <h1>📝 Pilih Huruf — Hangman + Animasi</h1>
     <div class="soal-box" id="area-soal" style="display: none;">
-        <div class="info-baris">
-            <div class="indikator">Soal <span id="nomor-soal">1</span> dari <span id="jumlah-soal">0</span></div>
-            <div class="kesempatan aman" id="info-kesempatan">Kesempatan: 0 kali</div>
+        <div class="atas">
+            <div class="info-area">
+                <div class="info-baris">
+                    <div class="indikator">Soal <span id="nomor-soal">1</span> dari <span id="jumlah-soal">0</span></div>
+                    <div class="kesempatan aman" id="info-kesempatan">Kesempatan: 0 kali</div>
+                </div>
+                <div class="teks-soal" id="teks-soal"></div>
+            </div>
+            
+            <!-- Area Hangman -->
+            <div class="hangman-area">
+                <div class="hangman" id="hangman">
+                    <div class="tiang-vertikal" id="bagian-1"></div>
+                    <div class="tiang-melintang" id="bagian-2"></div>
+                    <div class="tiang-miring" id="bagian-3"></div>
+                    <div class="kaitan" id="bagian-4"></div>
+                    <div class="kepala" id="bagian-5"></div>
+                    <div class="badan" id="bagian-6"></div>
+                    <div class="lengan-kiri" id="bagian-7"></div>
+                    <div class="lengan-kanan" id="bagian-8"></div>
+                    <div class="kaki-kiri" id="bagian-9"></div>
+                    <div class="kaki-kanan" id="bagian-10"></div>
+                </div>
+            </div>
         </div>
-        
-        <div class="teks-soal" id="teks-soal"></div>
         
         <div class="kotak-besar" id="wadah-kotak"></div>
         
@@ -171,12 +313,6 @@
     </div>
 
 <script>
-// Aturan:
-// - Klik huruf di papan → jika ada di jawaban, SEMUA posisi terisi otomatis
-// - Jika huruf TIDAK ada → kurangi kesempatan
-// - Kesempatan = ceil(jumlah huruf / 2)
-// - Kesempatan habis → jawaban ditampilkan
-
 let daftarSoal = [];
 let nomor = 0;
 let sisaKesempatan = 0;
@@ -184,6 +320,12 @@ let maksKesempatan = 0;
 let jawabanBenar = "";
 let hurufTerpakai = new Set();
 let sudahSelesai = false;
+let bagianTerbentuk = 0;
+
+// Urutan bagian yang muncul saat salah
+const urutanBagian = ["bagian-1", "bagian-2", "bagian-3", "bagian-4", 
+                      "bagian-5", "bagian-6", "bagian-7", "bagian-8", 
+                      "bagian-9", "bagian-10"];
 
 async function ambilSoal() {
     try {
@@ -214,10 +356,11 @@ async function ambilSoal() {
             });
         }
     } catch (err) {
+        // Contoh bawaan jika soal.csv belum ada
         daftarSoal = [
-            { soal: "Gaya yang mendorong benda disebut...", jawaban: "DORONGAN", keterangan: "8 huruf — D-O-R-O-N-G-A-N" },
-            { soal: "Satuan gaya adalah...", jawaban: "NEWTON", keterangan: "6 huruf — N-E-W-T-O-N" },
-            { soal: "Prinsip kerja Stack adalah...", jawaban: "LIFO", keterangan: "Last In First Out" }
+            { soal: "Gaya yang mendorong benda disebut...", jawaban: "DORONGAN", keterangan: "8 huruf" },
+            { soal: "Satuan gaya adalah...", jawaban: "NEWTON", keterangan: "6 huruf" },
+            { soal: "Prinsip kerja Stack adalah...", jawaban: "LIFO", keterangan: "4 huruf" }
         ];
     }
     
@@ -231,14 +374,20 @@ async function ambilSoal() {
 function tampilSoal() {
     sudahSelesai = false;
     hurufTerpakai.clear();
+    bagianTerbentuk = 0;
     jawabanBenar = daftarSoal[nomor].jawaban;
+    
+    // Sembunyikan semua bagian hangman
+    urutanBagian.forEach(id => {
+        document.getElementById(id).style.display = "none";
+    });
     
     // Hitung kesempatan
     const jumlahHuruf = jawabanBenar.length;
-    maksKesempatan = Math.ceil(jumlahHuruf / 2);
+    maksKesempatan = Math.min(Math.ceil(jumlahHuruf / 2), 10); // Maksimal 10 bagian
     sisaKesempatan = maksKesempatan;
     
-    // Info soal
+    // Tampil info
     document.getElementById("nomor-soal").textContent = nomor + 1;
     document.getElementById("teks-soal").textContent = daftarSoal[nomor].soal;
     document.getElementById("pesan").style.display = "none";
@@ -260,15 +409,14 @@ function tampilSoal() {
         wadah.appendChild(kolom);
     }
     
-    // Buat papan huruf A-Z
+    // Buat papan huruf
     buatPapanHuruf();
 }
 
 function buatPapanHuruf() {
     const papan = document.getElementById("papan-huruf");
     papan.innerHTML = "";
-    
-    for (let kode = 65; kode <= 90; kode++) { // A sampai Z
+    for (let kode = 65; kode <= 90; kode++) {
         const huruf = String.fromCharCode(kode);
         const tombol = document.createElement("button");
         tombol.className = "btn-huruf";
@@ -286,21 +434,20 @@ function pilihHuruf(huruf) {
     const tombol = document.getElementById(`huruf-${huruf}`);
     
     if (jawabanBenar.includes(huruf)) {
-        // ✅ Huruf BENAR — isi SEMUA posisi yang sesuai
+        // ✅ Benar — isi semua posisi sekaligus
         tombol.classList.add("benar", "terpakai");
-        
         for (let i = 0; i < jawabanBenar.length; i++) {
             if (jawabanBenar[i] === huruf) {
                 const kotak = document.getElementById(`kotak-${i}`);
                 kotak.textContent = huruf;
-                kotak.classList.add("terisi");
+                kotak.classList.add("terisi"); // Animasi berjalan di sini
             }
         }
-        
         cekSelesai();
     } else {
-        // ❌ Huruf SALAH — kurangi kesempatan
+        // ❌ Salah — tampilkan 1 bagian hangman
         tombol.classList.add("salah", "terpakai");
+        tampilkanBagianBerikutnya();
         sisaKesempatan--;
         perbaruiInfoKesempatan();
         
@@ -310,10 +457,17 @@ function pilihHuruf(huruf) {
     }
 }
 
+function tampilkanBagianBerikutnya() {
+    if (bagianTerbentuk < urutanBagian.length) {
+        const el = document.getElementById(urutanBagian[bagianTerbentuk]);
+        el.style.display = "block";
+        bagianTerbentuk++;
+    }
+}
+
 function cekSelesai() {
     const semuaTerisi = [...jawabanBenar].every((_, i) => {
-        const kotak = document.getElementById(`kotak-${i}`);
-        return kotak.textContent !== "";
+        return document.getElementById(`kotak-${i}`).textContent !== "";
     });
     
     if (semuaTerisi) {
@@ -334,14 +488,20 @@ function cekSelesai() {
 function tampilkanJawabanLengkap() {
     sudahSelesai = true;
     
-    // Isi semua kotak dengan jawaban benar
+    // Isi semua kotak
     for (let i = 0; i < jawabanBenar.length; i++) {
         const kotak = document.getElementById(`kotak-${i}`);
         kotak.textContent = jawabanBenar[i];
         kotak.classList.add("terisi");
     }
     
-    // Tandai huruf yang benar di papan
+    // Tampilkan sisa bagian hangman
+    while (bagianTerbentuk < urutanBagian.length) {
+        document.getElementById(urutanBagian[bagianTerbentuk]).style.display = "block";
+        bagianTerbentuk++;
+    }
+    
+    // Tandai huruf yang benar
     for (let kode = 65; kode <= 90; kode++) {
         const huruf = String.fromCharCode(kode);
         if (jawabanBenar.includes(huruf)) {
