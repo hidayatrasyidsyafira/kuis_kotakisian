@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kotak Isian — Animasi Perayaan</title>
+    <title>Kotak Isian — Countdown Bisa Diatur</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body {
@@ -40,7 +40,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             flex-wrap: wrap;
             gap: 10px;
         }
@@ -49,6 +49,59 @@
         .kesempatan.aman { color: #2ecc71; }
         .kesempatan.sedang { color: #f39c12; }
         .kesempatan.berbahaya { color: #e74c3c; }
+        /* ⏱️ STYLE COUNTDOWN */
+        .countdown-box {
+            background: #f0f0f0;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            min-width: 110px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .countdown-box.normal { background: #d4edda; color: #155724; }
+        .countdown-box.hampir { background: #fff3cd; color: #856404; }
+        .countdown-box.kritis { background: #f8d7da; color: #721c24; animation: kedip 0.8s infinite; }
+        @keyframes kedip {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pengaturan-waktu {
+            background: #eef2f5;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .pengaturan-waktu label {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        .pengaturan-waktu input {
+            width: 60px;
+            padding: 6px 8px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            text-align: center;
+        }
+        .pengaturan-waktu button {
+            padding: 6px 14px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .pengaturan-waktu button:hover { background: #2980b9; }
+        .pengaturan-waktu button:disabled { background: #95a5a6; cursor: not-allowed; }
+        
         .teks-soal {
             font-size: 1.2rem;
             color: #2c3e50;
@@ -153,7 +206,7 @@
         .tombol-mundur { background: #95a5a6; color: white; display: none; }
         .muat-info { text-align: center; color: #7f8c8d; padding: 30px; }
         
-        /* ✨ ANIMASI GELEMBUNG PERAYAAN — MUNCUL SAAT SEMUA BENAR */
+        /* Animasi Gelembung Perayaan */
         .gelembung-perayaan {
             position: fixed;
             width: 50px; height: 50px;
@@ -163,18 +216,9 @@
             animation: naikGelembung 2s ease-out forwards;
         }
         @keyframes naikGelembung {
-            0% {
-                transform: translateY(100vh) scale(0.3);
-                opacity: 1;
-            }
-            50% {
-                transform: translateY(-20px) scale(1);
-                opacity: 0.8;
-            }
-            100% {
-                transform: translateY(-150px) scale(0.5);
-                opacity: 0;
-            }
+            0% { transform: translateY(100vh) scale(0.3); opacity: 1; }
+            50% { transform: translateY(-20px) scale(1); opacity: 0.8; }
+            100% { transform: translateY(-150px) scale(0.5); opacity: 0; }
         }
         .teks-perayaan {
             position: fixed;
@@ -197,12 +241,23 @@
     </style>
 </head>
 <body>
-    <h1>📝 Pilih Huruf — Animasi Perayaan</h1>
+    <h1>📝 Pilih Huruf — Dengan Waktu</h1>
     <div class="soal-box" id="area-soal" style="display: none;">
+        
+        <!-- ⏱️ PENGATURAN WAKTU -->
+        <div class="pengaturan-waktu">
+            <label>Waktu per soal:</label>
+            <input type="number" id="input-detik" min="10" max="600" value="60">
+            <label>detik</label>
+            <button id="btn-terapkan-waktu" onclick="terapkanWaktu()">Terapkan</button>
+            <button id="btn-mulai-jeda" onclick="toggleJeda()">⏸️ Jeda</button>
+        </div>
+        
         <div class="atas">
             <div class="info-area">
                 <div class="info-baris">
                     <div class="indikator">Soal <span id="nomor-soal">1</span> dari <span id="jumlah-soal">0</span></div>
+                    <div class="countdown-box normal" id="kotak-waktu">⏱️ 60 dtk</div>
                     <div class="kesempatan aman" id="info-kesempatan">Kesempatan: 0 kali</div>
                 </div>
                 <div class="teks-soal" id="teks-soal"></div>
@@ -254,6 +309,12 @@ let hurufTerpakai = new Set();
 let sudahSelesai = false;
 let bagianTerbentuk = 0;
 
+// ⏱️ VARIABEL COUNTDOWN
+let detikPerSoal = 60; // Bisa diubah
+let sisaWaktu = 60;
+let timerCountdown = null;
+let sedangDijeda = false;
+
 const urutanBagian = ["bagian-1", "bagian-2", "bagian-3", "bagian-4", 
                       "bagian-5", "bagian-6", "bagian-7", "bagian-8", 
                       "bagian-9", "bagian-10"];
@@ -301,10 +362,40 @@ async function ambilSoal() {
     tampilSoal();
 }
 
+// ⏱️ Terapkan waktu yang diatur pengguna
+function terapkanWaktu() {
+    const input = document.getElementById("input-detik");
+    const nilai = parseInt(input.value);
+    if (nilai >= 10 && nilai <= 600) {
+        detikPerSoal = nilai;
+        if (!sudahSelesai) {
+            mulaiUlangCountdown();
+        }
+        return true;
+    }
+    alert("Masukkan angka antara 10–600 detik!");
+    return false;
+}
+
+// ⏸️ Jeda / Lanjutkan
+function toggleJeda() {
+    sedangDijeda = !sedangDijeda;
+    const btn = document.getElementById("btn-mulai-jeda");
+    btn.textContent = sedangDijeda ? "▶️ Lanjut" : "⏸️ Jeda";
+    
+    if (sedangDijeda) {
+        if (timerCountdown) clearInterval(timerCountdown);
+    } else {
+        jalankanCountdown();
+    }
+}
+
 function tampilSoal() {
     sudahSelesai = false;
     hurufTerpakai.clear();
     bagianTerbentuk = 0;
+    sedangDijeda = false;
+    document.getElementById("btn-mulai-jeda").textContent = "⏸️ Jeda";
     jawabanBenar = daftarSoal[nomor].jawaban;
     
     urutanBagian.forEach(id => {
@@ -336,6 +427,70 @@ function tampilSoal() {
     }
     
     buatPapanHuruf();
+    mulaiUlangCountdown(); // Mulai waktu baru untuk soal ini
+}
+
+// ⏱️ Mulai ulang countdown dari awal
+function mulaiUlangCountdown() {
+    if (timerCountdown) clearInterval(timerCountdown);
+    sisaWaktu = detikPerSoal;
+    perbaruiTampilanWaktu();
+    jalankanCountdown();
+}
+
+function jalankanCountdown() {
+    if (timerCountdown) clearInterval(timerCountdown);
+    
+    timerCountdown = setInterval(() => {
+        if (sedangDijeda || sudahSelesai) return;
+        
+        sisaWaktu--;
+        perbaruiTampilanWaktu();
+        
+        if (sisaWaktu <= 0) {
+            clearInterval(timerCountdown);
+            waktuHabis();
+        }
+    }, 1000);
+}
+
+function perbaruiTampilanWaktu() {
+    const el = document.getElementById("kotak-waktu");
+    el.textContent = `⏱️ ${sisaWaktu} dtk`;
+    
+    el.className = "countdown-box";
+    if (sisaWaktu > detikPerSoal * 0.5) {
+        el.classList.add("normal");
+    } else if (sisaWaktu > detikPerSoal * 0.2) {
+        el.classList.add("hampir");
+    } else {
+        el.classList.add("kritis");
+    }
+}
+
+function waktuHabis() {
+    sudahSelesai = true;
+    const pesanEl = document.getElementById("pesan");
+    pesanEl.textContent = "⏰ Waktu habis! Jawaban: " + jawabanBenar;
+    pesanEl.className = "pesan salah";
+    
+    // Tampilkan jawaban lengkap
+    for (let i = 0; i < jawabanBenar.length; i++) {
+        const kotak = document.getElementById(`kotak-${i}`);
+        kotak.textContent = jawabanBenar[i];
+        kotak.classList.add("terisi");
+    }
+    
+    // Tampilkan sisa hangman
+    while (bagianTerbentuk < urutanBagian.length) {
+        document.getElementById(urutanBagian[bagianTerbentuk]).style.display = "block";
+        bagianTerbentuk++;
+    }
+    
+    document.getElementById("btn-ulang").disabled = true;
+    if (nomor < daftarSoal.length - 1) {
+        document.getElementById("tombol-berikutnya").style.display = "inline-block";
+    }
 }
 
 function buatPapanHuruf() {
@@ -353,7 +508,7 @@ function buatPapanHuruf() {
 }
 
 function pilihHuruf(huruf) {
-    if (sudahSelesai || hurufTerpakai.has(huruf)) return;
+    if (sudahSelesai || hurufTerpakai.has(huruf) || sedangDijeda) return;
     
     hurufTerpakai.add(huruf);
     const tombol = document.getElementById(`huruf-${huruf}`);
@@ -375,6 +530,7 @@ function pilihHuruf(huruf) {
         perbaruiInfoKesempatan();
         
         if (sisaKesempatan <= 0) {
+            clearInterval(timerCountdown);
             tampilkanJawabanLengkap();
         }
     }
@@ -394,8 +550,8 @@ function cekSelesai() {
     
     if (semuaTerisi) {
         sudahSelesai = true;
+        clearInterval(timerCountdown); // Hentikan waktu
         
-        // 🎉 MUNCULKAN ANIMASI GELEMBUNG PERAYAAN
         munculkanPerayaan();
         
         const pesanEl = document.getElementById("pesan");
@@ -411,11 +567,8 @@ function cekSelesai() {
     }
 }
 
-// ✨ FUNGSI ANIMASI GELEMBUNG NAIK
 function munculkanPerayaan() {
     const warna = ["#2ecc71", "#3498db", "#f1c40f", "#e74c3c", "#9b59b6", "#1abc9c"];
-    
-    // Buat 15 gelembung naik dari bawah
     for (let i = 0; i < 15; i++) {
         setTimeout(() => {
             const gelembung = document.createElement("div");
@@ -425,12 +578,10 @@ function munculkanPerayaan() {
             gelembung.style.width = (Math.random() * 30 + 30) + "px";
             gelembung.style.height = gelembung.style.width;
             document.body.appendChild(gelembung);
-            
             setTimeout(() => gelembung.remove(), 2000);
         }, i * 100);
     }
     
-    // Teks besar BENAR! di tengah
     const teks = document.createElement("div");
     teks.className = "teks-perayaan";
     teks.textContent = "🎉 BENAR! 🎉";
@@ -480,11 +631,13 @@ function perbaruiInfoKesempatan() {
 }
 
 function ulangSoal() {
+    if (timerCountdown) clearInterval(timerCountdown);
     tampilSoal();
 }
 
 function soalBerikutnya() {
     if (nomor < daftarSoal.length - 1) {
+        if (timerCountdown) clearInterval(timerCountdown);
         nomor++;
         tampilSoal();
     }
@@ -492,6 +645,7 @@ function soalBerikutnya() {
 
 function soalSebelumnya() {
     if (nomor > 0) {
+        if (timerCountdown) clearInterval(timerCountdown);
         nomor--;
         tampilSoal();
     }
