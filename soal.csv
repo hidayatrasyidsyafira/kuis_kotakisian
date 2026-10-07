@@ -1,4 +1,11 @@
 soal,jawaban,keterangan
-Gaya yang mendorong benda disebut?,DORONGAN,8 huruf: D-O-R-O-N-G-A-N
-Satuan gaya adalah?,NEWTON,6 huruf: N-E-W-T-O-N
-Prinsip kerja Stack adalah?,LIFO,Last In First Out
+Fungsi SUMIFS digunakan untuk penjumlahan dengan berapa kriteria?,BANYAK,artinya satu syarat atau lebih
+Bagian yang berisi rentang nilai yang akan dijumlahkan disebut?,SUM_RANGE,9 karakter: S-U-M_-R-A-N-G-E
+Bagian opsional yang berisi syarat kedua disebut?,CRITERIA_RANGE2,boleh ditambahkan atau tidak
+Penulisan pasangan syarat dalam rumus SUMIFS dipisahkan dengan?,TITIKKOMMA,simbol: ;
+Kriteria yang diterapkan pada rentang pertama ditentukan oleh bagian?,CRITERIA1,berpasangan dengan criteria_range1
+SUMIFS berbeda dengan SUMIF karena bisa memakai berapa syarat?,LEBIHDARI1,satu syarat atau lebih
+Apa nama rentang sel yang akan diuji sesuai kriteria pertama?,CRITERIA_RANGE1,berpasangan dengan criteria1
+Bagian mana dari SUMIFS yang wajib diisi?,SUM_RANGE,harus ada saat menulis rumus
+Apa yang menjadi penentu sel mana yang dijumlahkan?,KRITERIA,syarat yang ditetapkan
+Apakah boleh menambahkan lebih dari dua pasang syarat di SUMIFS?,BOLEH,sesuai kebutuhan pengguna
