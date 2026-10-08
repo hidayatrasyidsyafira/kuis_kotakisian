@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kotak Isian — Countdown Bisa Diatur</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        h1 { color: #2c3e50; margin-bottom: 20px; font-size: 1.5rem; text-align: center; }
+        
+        /* === TAMPILAN AWAL & TOMBOL MULAI === */
+        .awal-area {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            z-index: 2;
+        }
+        .awal-area p {
+            color: #555;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        .tombol-mulai-utama {
+            padding: 15px 40px;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tombol-mulai-utama:hover {
+            background: #27ae60;
+            transform: scale(1.05);
+        }
+        
+        .soal-box {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            max-width: 850px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            display: none; /* Sembunyi sampai diklik Mulai */
+        }
+        .atas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+        .info-area { flex: 1; min-width: 300px; }
+        .info-baris {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .indikator { color: #7f8c8d; font-size: 0.95rem; }
+        .kesempatan { font-weight: bold; font-size: 0.95rem; }
+        .kesempatan.aman { color: #2ecc71; }
+        .kesempatan.sedang { color: #f39c12; }
+        .kesempatan.berbahaya { color: #e74c3c; }
+        /* ⏱️ STYLE COUNTDOWN */
+        .countdown-box {
+            background: #f0f0f0;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            min-width: 110px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .countdown-box.normal { background: #d4edda; color: #155724; }
+        .countdown-box.hampir { background: #fff3cd; color: #856404; }
+        .countdown-box.kritis { background: #f8d7da; color: #721c24; animation: kedip 0.8s infinite; }
+        @keyframes kedip {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pengaturan-waktu {
+            background: #eef2f5;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+        .pengaturan-waktu label {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        .pengaturan-waktu input {
+            width: 60px;
+            padding: 6px 8px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            text-align: center;
+        }
+        .pengaturan-waktu button {
+            padding: 6px 14px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .pengaturan-waktu button:hover { background: #2980b9; }
+        .pengaturan-waktu button:disabled { background: #95a5a6; cursor: not-allowed; }
+        
+        .teks-soal {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        /* Hangman */
+        .hangman-area {
+            width: 200px;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid #ddd;
+        }
+        .hangman { position: relative; width: 120px; height: 200px; }
+        .tiang-vertikal, .tiang-melintang, .tiang-miring, .kaitan, 
+        .kepala, .badan, .lengan-kiri, .lengan-kanan, .kaki-kiri, .kaki-kanan {
+            position: absolute;
+            background: #2c3e50;
+            display: none;
+            transition: all 0.4s ease-in-out;
+        }
+        .tiang-vertikal { width: 6px; height: 180px; bottom: 0; left: 50%; transform: translateX(-50%); }
+        .tiang-melintang { width: 90px; height: 6px; top: 10px; left: 50%; transform: translateX(-50%); }
+        .tiang-miring { width: 65px; height: 6px; top: 30px; left: 50%; transform: translateX(-50%) rotate(30deg); }
+        .kaitan { width: 3px; height: 28px; top: 16px; left: 50%; transform: translateX(-50%); }
+        .kepala { width: 36px; height: 36px; border-radius: 50%; top: 44px; left: 50%; transform: translateX(-50%); background: #3498db; }
+        .badan { width: 5px; height: 55px; top: 80px; left: 50%; transform: translateX(-50%); }
+        .lengan-kiri { width: 4px; height: 35px; top: 88px; left: 50%; transform: translateX(-50%) rotate(-45deg); transform-origin: top center; }
+        .lengan-kanan { width: 4px; height: 35px; top: 88px; left: 50%; transform: translateX(-50%) rotate(45deg); transform-origin: top center; }
+        .kaki-kiri { width: 4px; height: 35px; top: 130px; left: 50%; transform: translateX(-50%) rotate(-35deg); transform-origin: top center; }
+        .kaki-kanan { width: 4px; height: 35px; top: 130px; left: 50%; transform: translateX(-50%) rotate(35deg); transform-origin: top center; }
+        /* Kotak Jawaban */
+        .kotak-besar {
+            display: flex;
+            border: 4px solid #2c3e50;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        .kolom { flex: 1; border-right: 3px solid #2c3e50; }
+        .kolom:last-child { border-right: none; }
+        .kotak {
+            width: 100%;
+            height: 85px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            background: #fff;
+            transition: background 0.3s;
+        }
+        .kotak.terisi { background: #d4edda; color: #155724; }
+        /* Papan Huruf */
+        .papan-huruf {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        .btn-huruf {
+            width: 42px; height: 48px; border: none; border-radius: 8px;
+            background: #3498db; color: white;
+            font-size: 1.1rem; font-weight: bold; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-huruf:hover { transform: scale(1.1); background: #2980b9; }
+        .btn-huruf.terpakai { background: #95a5a6; cursor: not-allowed; transform: none; }
+        .btn-huruf.benar { background: #2ecc71; }
+        .btn-huruf.salah { background: #e74c3c; }
+        .pesan {
+            margin-top: 15px; padding: 12px; border-radius: 10px;
+            text-align: center; font-weight: bold; display: none;
+        }
+        .pesan.benar { background: #d4edda; color: #155724; display: block; }
+        .pesan.salah { background: #f8d7da; color: #721c24; display: block; }
+        .tombol-group {
+            display: flex; gap: 12px; flex-wrap: wrap;
+            justify-content: center; margin-top: 10px;
+        }
+        .tombol {
+            padding: 12px 24px; border: none; border-radius: 10px;
+            font-size: 1rem; font-weight: bold; cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .tombol:hover { transform: scale(1.05); }
+        .tombol:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .tombol-ulang { background: #f39c12; color: white; }
+        .tombol-lanjut { background: #2ecc71; color: white; display: none; }
+        .nav-soal {
+            display: flex; justify-content: space-between; margin-top: 20px;
+        }
+        .tombol-mundur { background: #95a5a6; color: white; display: none; }
+        .muat-info { text-align: center; color: #7f8c8d; padding: 30px; }
+        
+        /* Animasi Gelembung Perayaan */
+        .gelembung-perayaan {
+            position: fixed;
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999;
+            animation: naikGelembung 2s ease-out forwards;
+        }
+        @keyframes naikGelembung {
+            0% { transform: translateY(100vh) scale(0.3); opacity: 1; }
+            50% { transform: translateY(-20px) scale(1); opacity: 0.8; }
+            100% { transform: translateY(-150px) scale(0.5); opacity: 0; }
+        }
+        .teks-perayaan {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2ecc71;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            pointer-events: none;
+            animation: munculTeks 1.5s ease-out forwards;
+        }
+        @keyframes munculTeks {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            70% { transform: translate(-50%, -50%) scale(0.95); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <h1>📝 Pilih Huruf — Dengan Waktu</h1>
+    
+    <!-- === TAMPILAN AWAL: TOMBOL MULAI === -->
+    <div class="awal-area" id="area-awal">
+        <p>Selamat datang di kuis tebak kata! <br>Siapkan dirimu, waktu akan berjalan saat mulai.</p>
+        <button class="tombol-mulai-utama" id="btn-mulai" onclick="mulaiPermainan()">🎮 MULAI</button>
+    </div>
+    
+    <div class="muat-info" id="area-muat" style="display: none;">
+        <p>📥 Sedang memuat soal dari soal.csv...</p>
+        <p style="margin-top: 15px; font-size: 0.9rem;">Format: soal,jawaban,keterangan</p>
+    </div>
+    
+    <div class="soal-box" id="area-soal">
+        
+        <!-- ⏱️ PENGATURAN WAKTU -->
+        <div class="pengaturan-waktu">
+            <label>Waktu per soal:</label>
+            <input type="number" id="input-detik" min="10" max="600" value="60">
+            <label>detik</label>
+            <button id="btn-terapkan-waktu" onclick="terapkanWaktu()">Terapkan</button>
+            <button id="btn-mulai-jeda" onclick="toggleJeda()">⏸️ Jeda</button>
+        </div>
+        
+        <div class="atas">
+            <div class="info-area">
+                <div class="info-baris">
+                    <div class="indikator">Soal <span id="nomor-soal">1</span> dari <span id="jumlah-soal">0</span></div>
+                    <div class="countdown-box normal" id="kotak-waktu">⏱️ 60 dtk</div>
+                    <div class="kesempatan aman" id="info-kesempatan">Kesempatan: 0 kali</div>
+                </div>
+                <div class="teks-soal" id="teks-soal"></div>
+            </div>
+            
+            <div class="hangman-area">
+                <div class="hangman" id="hangman">
+                    <div class="tiang-vertikal" id="bagian-1"></div>
+                    <div class="tiang-melintang" id="bagian-2"></div>
+                    <div class="tiang-miring" id="bagian-3"></div>
+                    <div class="kaitan" id="bagian-4"></div>
+                    <div class="kepala" id="bagian-5"></div>
+                    <div class="badan" id="bagian-6"></div>
+                    <div class="lengan-kiri" id="bagian-7"></div>
+                    <div class="lengan-kanan" id="bagian-8"></div>
+                    <div class="kaki-kiri" id="bagian-9"></div>
+                    <div class="kaki-kanan" id="bagian-10"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="kotak-besar" id="wadah-kotak"></div>
+        <div class="papan-huruf" id="papan-huruf"></div>
+        <div class="pesan" id="pesan"></div>
+        
+        <div class="tombol-group">
+            <button class="tombol tombol-ulang" id="btn-ulang" onclick="ulangSoal()">🔄 Ulangi Soal</button>
+            <button class="tombol tombol-lanjut" id="tombol-berikutnya" onclick="soalBerikutnya()">➡️ Berikutnya</button>
+        </div>
+        
+        <div class="nav-soal">
+            <button class="tombol tombol-mundur" id="tombol-sebelumnya" onclick="soalSebelumnya()">⬅️ Sebelumnya</button>
+            <div></div>
+        </div>
+    </div>
+    
+<script>
+let daftarSoal = [];
+let nomor = 0;
+let sisaKesempatan = 0;
+let maksKesempatan = 0;
+let jawabanBenar = "";
+let hurufTerpakai = new Set();
+let sudahSelesai = false;
+let bagianTerbentuk = 0;
+// ⏱️ VARIABEL COUNTDOWN
+let detikPerSoal = 60;
+let sisaWaktu = 60;
+let timerCountdown = null;
+let sedangDijeda = false;
+let soalSudahDimuat = false; // Tandai soal sudah siap
+
+const urutanBagian = ["bagian-1", "bagian-2", "bagian-3", "bagian-4", 
+                      "bagian-5", "bagian-6", "bagian-7", "bagian-8", 
+                      "bagian-9", "bagian-10"];
+
+// Muat soal saat halaman dibuka (tetapi belum tampil)
+ambilSoal();
+
+async function ambilSoal() {
+    try {
+        const res = await fetch("soal.csv", { cache: "no-store" });
+        if (!res.ok) throw new Error("Tidak dapat memuat soal.csv");
+        const teks = await res.text();
+        
+        const baris = teks.split("\n").map(r => {
+            const hasil = [];
+            let bagian = "", dalamKutip = false;
+            for (let c of r) {
+                if (c === '"') dalamKutip = !dalamKutip;
+                else if (c === "," && !dalamKutip) { hasil.push(bagian.trim()); bagian = ""; }
+                else bagian += c;
+            }
+            hasil.push(bagian.trim());
+            return hasil;
+        });
+        
+        daftarSoal = [];
+        for (let i = 1; i < baris.length; i++) {
+            const k = baris[i];
+            if (!k || k.length < 2 || !k[0]) continue;
+            daftarSoal.push({
+                soal: k[0].replace(/^"|"$/g, ""),
+                jawaban: (k[1] || "").replace(/^"|"$/g, "").replace(/\s+/g, "").toUpperCase().trim(),
+                keterangan: k[2] ? k[2].replace(/^"|"$/g, "") : ""
+            });
+        }
+    } catch (err) {
+        daftarSoal = [
+            { soal: "Gaya yang mendorong benda disebut...", jawaban: "DORONGAN", keterangan: "8 huruf" },
+            { soal: "Satuan gaya adalah...", jawaban: "NEWTON", keterangan: "6 huruf" },
+            { soal: "Prinsip kerja Stack adalah...", jawaban: "LIFO", keterangan: "4 huruf" }
+        ];
+    }
+    
+    soalSudahDimuat = true;
+    document.getElementById("area-muat").style.display = "none";
+    // Area soal TETAP tersembunyi sampai diklik Mulai
+}
+
+// === FUNGSI MULAI PERMAINAN ===
+function mulaiPermainan() {
+    if (!soalSudahDimuat) {
+        alert("Soal belum siap, tunggu sebentar ya!");
+        return;
+    }
+    
+    // Sembunyikan tampilan awal
+    document.getElementById("area-awal").style.display = "none";
+    // Tampilkan soal
+    document.getElementById("area-soal").style.display = "block";
+    document.getElementById("jumlah-soal").textContent = daftarSoal.length;
+    
+    tampilSoal();
+}
+
+// ⏱️ Terapkan waktu yang diatur pengguna
+function terapkanWaktu() {
+    const input = document.getElementById("input-detik");
+    const nilai = parseInt(input.value);
+    if (nilai >= 10 && nilai <= 600) {
+        detikPerSoal = nilai;
+        if (!sudahSelesai) {
+            mulaiUlangCountdown();
+        }
+        return true;
+    }
+    alert("Masukkan angka antara 10–600 detik!");
+    return false;
+}
+
+// ⏸️ Jeda / Lanjutkan
+function toggleJeda() {
+    sedangDijeda = !sedangDijeda;
+    const btn = document.getElementById("btn-mulai-jeda");
+    btn.textContent = sedangDijeda ? "▶️ Lanjut" : "⏸️ Jeda";
+    
+    if (sedangDijeda) {
+        if (timerCountdown) clearInterval(timerCountdown);
+    } else {
+        jalankanCountdown();
+    }
+}
+
+function tampilSoal() {
+    sudahSelesai = false;
+    hurufTerpakai.clear();
+    bagianTerbentuk = 0;
+    sedangDijeda = false;
+    document.getElementById("btn-mulai-jeda").textContent = "⏸️ Jeda";
+    jawabanBenar = daftarSoal[nomor].jawaban;
+    
+    urutanBagian.forEach(id => {
+        document.getElementById(id).style.display = "none";
+    });
+    
+    const jumlahHuruf = jawabanBenar.length;
+    maksKesempatan = Math.min(Math.ceil(jumlahHuruf / 2), 10);
+    sisaKesempatan = maksKesempatan;
+    
+    document.getElementById("nomor-soal").textContent = nomor + 1;
+    document.getElementById("teks-soal").textContent = daftarSoal[nomor].soal;
+    document.getElementById("pesan").style.display = "none";
+    document.getElementById("tombol-berikutnya").style.display = "none";
+    document.getElementById("tombol-sebelumnya").style.display = nomor > 0 ? "inline-block" : "none";
+    document.getElementById("btn-ulang").disabled = false;
+    perbaruiInfoKesempatan();
+    
+    const wadah = document.getElementById("wadah-kotak");
+    wadah.innerHTML = "";
+    for (let i = 0; i < jumlahHuruf; i++) {
+        const kolom = document.createElement("div");
+        kolom.className = "kolom";
+        const kotak = document.createElement("div");
+        kotak.className = "kotak";
+        kotak.id = `kotak-${i}`;
+        kolom.appendChild(kotak);
+        wadah.appendChild(kolom);
+    }
+    
+    buatPapanHuruf();
+    mulaiUlangCountdown();
+}
+
+// ⏱️ Mulai ulang countdown dari awal
+function mulaiUlangCountdown() {
+    if (timerCountdown) clearInterval(timerCountdown);
+    sisaWaktu = detikPerSoal;
+    perbaruiTampilanWaktu();
+    jalankanCountdown();
+}
+
+function jalankanCountdown() {
+    if (timerCountdown) clearInterval(timerCountdown);
+    
+    timerCountdown = setInterval(() => {
+        if (sedangDijeda || sudahSelesai) return;
+        
+        sisaWaktu--;
+        perbaruiTampilanWaktu();
+        
+        if (sisaWaktu <= 0) {
+            clearInterval(timerCountdown);
+            waktuHabis();
+        }
+    }, 1000);
+}
+
+function perbaruiTampilanWaktu() {
+    const el = document.getElementById("kotak-waktu");
+    el.textContent = `⏱️ ${sisaWaktu} dtk`;
+    
+    el.className = "countdown-box";
+    if (sisaWaktu > detikPerSoal * 0.5) {
+        el.classList.add("normal");
+    } else if (sisaWaktu > detikPerSoal * 0.2) {
+        el.classList.add("hampir");
+    } else {
+        el.classList.add("kritis");
+    }
+}
+
+function waktuHabis() {
+    sudahSelesai = true;
+    const pesanEl = document.getElementById("pesan");
+    pesanEl.textContent = "⏰ Waktu habis! Jawaban: " + jawabanBenar;
+    pesanEl.className = "pesan salah";
+    
+    for (let i = 0; i < jawabanBenar.length; i++) {
+        const kotak = document.getElementById(`kotak-${i}`);
+        kotak.textContent = jawabanBenar[i];
+        kotak.classList.add("terisi");
+    }
+    
+    while (bagianTerbentuk < urutanBagian.length) {
+        document.getElementById(urutanBagian[bagianTerbentuk]).style.display = "block";
+        bagianTerbentuk++;
+    }
+    
+    document.getElementById("btn-ulang").disabled = true;
+    if (nomor < daftarSoal.length - 1) {
+        document.getElementById("tombol-berikutnya").style.display = "inline-block";
+    }
+}
+
+function buatPapanHuruf() {
+    const papan = document.getElementById("papan-huruf");
+    papan.innerHTML = "";
+    for (let kode = 65; kode <= 90; kode++) {
+        const huruf = String.fromCharCode(kode);
+        const tombol = document.createElement("button");
+        tombol.className = "btn-huruf";
+        tombol.textContent = huruf;
+        tombol.id = `huruf-${huruf}`;
+        tombol.onclick = () => pilihHuruf(huruf);
+        papan.appendChild(tombol);
+    }
+}
+
+function pilihHuruf(huruf) {
+    if (sudahSelesai || hurufTerpakai.has(huruf) || sedangDijeda) return;
+    
+    hurufTerpakai.add(huruf);
+    const tombol = document.getElementById(`huruf-${huruf}`);
+    
+    if (jawabanBenar.includes(huruf)) {
+        tombol.classList.add("benar", "terpakai");
+        for (let i = 0; i < jawabanBenar.length; i++) {
+            if (jawabanBenar[i] === huruf) {
+                const kotak = document.getElementById(`kotak-${i}`);
+                kotak.textContent = huruf;
+                kotak.classList.add("terisi");
+            }
+        }
+        cekSelesai();
+    } else {
+        tombol.classList.add("salah", "terpakai");
+        tampilkanBagianBerikutnya();
+        sisaKesempatan--;
+        perbaruiInfoKesempatan();
+        
+        if (sisaKesempatan <= 0) {
+            clearInterval(timerCountdown);
+            tampilkanJawabanLengkap();
+        }
+    }
+}
+
+function tampilkanBagianBerikutnya() {
+    if (bagianTerbentuk < urutanBagian.length) {
+        document.getElementById(urutanBagian[bagianTerbentuk]).style.display = "block";
+        bagianTerbentuk++;
+    }
+}
+
+function cekSelesai() {
+    const semuaTerisi = [...jawabanBenar].every((_, i) => {
+        return document.getElementById(`kotak-${i}`).textContent !== "";
+    });
+    
+    if (semuaTerisi) {
+        sudahSelesai = true;
+        clearInterval(timerCountdown);
+        
+        munculkanPerayaan();
+        
+        const pesanEl = document.getElementById("pesan");
+        pesanEl.textContent = "✅ BENAR! " + (daftarSoal[nomor].keterangan || "");
+        pesanEl.className = "pesan benar";
+        document.getElementById("btn-ulang").disabled = true;
+        
+        if (nomor < daftarSoal.length - 1) {
+            document.getElementById("tombol-berikutnya").style.display = "inline-block";
+        } else {
+            pesanEl.textContent += " 🎉 Selesai semua!";
+        }
+    }
+}
+
+function munculkanPerayaan() {
+    const warna = ["#2ecc71", "#3498db", "#f1c40f", "#e74c3c", "#9b59b6", "#1abc9c"];
+    for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+            const gelembung = document.createElement("div");
+            gelembung.className = "gelembung-perayaan";
+            gelembung.style.left = (Math.random() * 90 + 5) + "%";
+            gelembung.style.background = warna[Math.floor(Math.random() * warna.length)];
+            gelembung.style.width = (Math.random() * 30 + 30) + "px";
+            gelembung.style.height = gelembung.style.width;
+            document.body.appendChild(gelembung);
+            setTimeout(() => gelembung.remove(), 2000);
+        }, i * 100);
+    }
+    
+    const teks = document.createElement("div");
+    teks.className = "teks-perayaan";
+    teks.textContent = "🎉 BENAR! 🎉";
+    document.body.appendChild(teks);
+    setTimeout(() => teks.remove(), 1500);
+}
+
+function tampilkanJawabanLengkap() {
+    sudahSelesai = true;
+    
+    for (let i = 0; i < jawabanBenar.length; i++) {
+        const kotak = document.getElementById(`kotak-${i}`);
+        kotak.textContent = jawabanBenar[i];
+        kotak.classList.add("terisi");
+    }
+    
+    while (bagianTerbentuk < urutanBagian.length) {
+        document.getElementById(urutanBagian[bagianTerbentuk]).style.display = "block";
+        bagianTerbentuk++;
+    }
+    
+    for (let kode = 65; kode <= 90; kode++) {
+        const huruf = String.fromCharCode(kode);
+        if (jawabanBenar.includes(huruf)) {
+            const tombol = document.getElementById(`huruf-${huruf}`);
+            if (tombol) tombol.classList.add("benar", "terpakai");
+        }
+    }
+    
+    const pesanEl = document.getElementById("pesan");
+    pesanEl.textContent = "❌ Kesempatan habis! Jawaban: " + jawabanBenar;
+    pesanEl.className = "pesan salah";
+    document.getElementById("btn-ulang").disabled = true;
+    
+    if (nomor < daftarSoal.length - 1) {
+        document.getElementById("tombol-berikutnya").style.display = "inline-block";
+    }
+}
+
+function perbaruiInfoKesempatan() {
+    const el = document.getElementById("info-kesempatan");
+    el.textContent = `Kesempatan: ${sisaKesempatan} kali`;
+    el.className = "kesempatan";
+    if (sisaKesempatan > maksKesempatan / 2) el.classList.add("aman");
+    else if (sisaKesempatan > 1) el.classList.add("sedang");
+    else el.classList.add("berbahaya");
+}
+
+function ulangSoal() {
+    if (timerCountdown) clearInterval(timerCountdown);
+    tampilSoal();
+}
+
+function soalBerikutnya() {
+    if (nomor < daftarSoal.length - 1) {
+        if (timerCountdown) clearInterval(timerCountdown);
+        nomor++;
+        tampilSoal();
+    }
+}
+
+function soalSebelumnya() {
+    if (nomor > 0) {
+        if (timerCountdown) clearInterval(timerCountdown);
+        nomor--;
+        tampilSoal();
+    }
+}
+</script>
+</body>
+</html>
