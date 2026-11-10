@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kotak Isian — Countdown Bisa Diatur</title>
+    <title>Tebak Kata Pembelajaran — Countdown & Soal Teracak</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body {
@@ -17,7 +17,7 @@
             overflow-x: hidden;
         }
         h1 { color: #2c3e50; margin-bottom: 20px; font-size: 1.5rem; text-align: center; }
-        
+
         /* === TAMPILAN AWAL & TOMBOL MULAI === */
         .awal-area {
             background: white;
@@ -49,7 +49,7 @@
             background: #27ae60;
             transform: scale(1.05);
         }
-        
+
         .soal-box {
             background: white;
             padding: 25px 30px;
@@ -59,7 +59,7 @@
             width: 100%;
             position: relative;
             z-index: 1;
-            display: none; /* Sembunyi sampai diklik Mulai */
+            display: none;
         }
         .atas {
             display: flex;
@@ -83,7 +83,6 @@
         .kesempatan.aman { color: #2ecc71; }
         .kesempatan.sedang { color: #f39c12; }
         .kesempatan.berbahaya { color: #e74c3c; }
-        /* ⏱️ STYLE COUNTDOWN */
         .countdown-box {
             background: #f0f0f0;
             padding: 8px 16px;
@@ -136,7 +135,7 @@
         }
         .pengaturan-waktu button:hover { background: #2980b9; }
         .pengaturan-waktu button:disabled { background: #95a5a6; cursor: not-allowed; }
-        
+
         .teks-soal {
             font-size: 1.2rem;
             color: #2c3e50;
@@ -144,7 +143,6 @@
             line-height: 1.6;
             font-weight: 500;
         }
-        /* Hangman */
         .hangman-area {
             width: 200px;
             height: 250px;
@@ -157,7 +155,7 @@
             border: 2px solid #ddd;
         }
         .hangman { position: relative; width: 120px; height: 200px; }
-        .tiang-vertikal, .tiang-melintang, .tiang-miring, .kaitan, 
+        .tiang-vertikal, .tiang-melintang, .tiang-miring, .kaitan,
         .kepala, .badan, .lengan-kiri, .lengan-kanan, .kaki-kiri, .kaki-kanan {
             position: absolute;
             background: #2c3e50;
@@ -174,7 +172,7 @@
         .lengan-kanan { width: 4px; height: 35px; top: 88px; left: 50%; transform: translateX(-50%) rotate(45deg); transform-origin: top center; }
         .kaki-kiri { width: 4px; height: 35px; top: 130px; left: 50%; transform: translateX(-50%) rotate(-35deg); transform-origin: top center; }
         .kaki-kanan { width: 4px; height: 35px; top: 130px; left: 50%; transform: translateX(-50%) rotate(35deg); transform-origin: top center; }
-        /* Kotak Jawaban */
+
         .kotak-besar {
             display: flex;
             border: 4px solid #2c3e50;
@@ -198,7 +196,7 @@
             transition: background 0.3s;
         }
         .kotak.terisi { background: #d4edda; color: #155724; }
-        /* Papan Huruf */
+
         .papan-huruf {
             display: flex;
             flex-wrap: wrap;
@@ -240,8 +238,7 @@
         }
         .tombol-mundur { background: #95a5a6; color: white; display: none; }
         .muat-info { text-align: center; color: #7f8c8d; padding: 30px; }
-        
-        /* Animasi Gelembung Perayaan */
+
         .gelembung-perayaan {
             position: fixed;
             width: 50px; height: 50px;
@@ -276,21 +273,21 @@
     </style>
 </head>
 <body>
-    <h1>📝 Pilih Huruf — Dengan Waktu</h1>
-    
+    <h1>📝 Tebak Kata — Dengan Waktu & Soal Teracak</h1>
+
     <!-- === TAMPILAN AWAL: TOMBOL MULAI === -->
     <div class="awal-area" id="area-awal">
-        <p>Selamat datang di kuis tebak kata! <br>Siapkan dirimu, waktu akan berjalan saat mulai.</p>
+        <p>Selamat datang di kuis tebak kata! <br>Soal akan diacak setiap sesi. Siapkan dirimu, waktu akan berjalan saat mulai.</p>
         <button class="tombol-mulai-utama" id="btn-mulai" onclick="mulaiPermainan()">🎮 MULAI</button>
     </div>
-    
+
     <div class="muat-info" id="area-muat" style="display: none;">
         <p>📥 Sedang memuat soal dari soal.csv...</p>
         <p style="margin-top: 15px; font-size: 0.9rem;">Format: soal,jawaban,keterangan</p>
     </div>
-    
+
     <div class="soal-box" id="area-soal">
-        
+
         <!-- ⏱️ PENGATURAN WAKTU -->
         <div class="pengaturan-waktu">
             <label>Waktu per soal:</label>
@@ -299,7 +296,7 @@
             <button id="btn-terapkan-waktu" onclick="terapkanWaktu()">Terapkan</button>
             <button id="btn-mulai-jeda" onclick="toggleJeda()">⏸️ Jeda</button>
         </div>
-        
+
         <div class="atas">
             <div class="info-area">
                 <div class="info-baris">
@@ -309,7 +306,7 @@
                 </div>
                 <div class="teks-soal" id="teks-soal"></div>
             </div>
-            
+
             <div class="hangman-area">
                 <div class="hangman" id="hangman">
                     <div class="tiang-vertikal" id="bagian-1"></div>
@@ -325,22 +322,22 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="kotak-besar" id="wadah-kotak"></div>
         <div class="papan-huruf" id="papan-huruf"></div>
         <div class="pesan" id="pesan"></div>
-        
+
         <div class="tombol-group">
             <button class="tombol tombol-ulang" id="btn-ulang" onclick="ulangSoal()">🔄 Ulangi Soal</button>
             <button class="tombol tombol-lanjut" id="tombol-berikutnya" onclick="soalBerikutnya()">➡️ Berikutnya</button>
         </div>
-        
+
         <div class="nav-soal">
             <button class="tombol tombol-mundur" id="tombol-sebelumnya" onclick="soalSebelumnya()">⬅️ Sebelumnya</button>
             <div></div>
         </div>
     </div>
-    
+
 <script>
 let daftarSoal = [];
 let nomor = 0;
@@ -350,21 +347,17 @@ let jawabanBenar = "";
 let hurufTerpakai = new Set();
 let sudahSelesai = false;
 let bagianTerbentuk = 0;
-// ⏱️ VARIABEL COUNTDOWN
 let detikPerSoal = 60;
 let sisaWaktu = 60;
 let timerCountdown = null;
 let sedangDijeda = false;
-let soalSudahDimuat = false; // Tandai soal sudah siap
+let soalSudahDimuat = false;
 
-const urutanBagian = ["bagian-1", "bagian-2", "bagian-3", "bagian-4", 
-                      "bagian-5", "bagian-6", "bagian-7", "bagian-8", 
+const urutanBagian = ["bagian-1", "bagian-2", "bagian-3", "bagian-4",
+                      "bagian-5", "bagian-6", "bagian-7", "bagian-8",
                       "bagian-9", "bagian-10"];
 
-// Muat soal saat halaman dibuka (tetapi belum tampil)
-ambilSoal();
-// ✅ Fungsi Fisher-Yates Shuffle
-    
+// ✅ BARU — Fungsi acak array (Fisher-Yates Shuffle)
 function acakArray(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -372,13 +365,16 @@ function acakArray(arr) {
     }
     return arr;
 }
-    
+
+// Muat soal saat halaman dibuka
+ambilSoal();
+
 async function ambilSoal() {
     try {
         const res = await fetch("soal.csv", { cache: "no-store" });
         if (!res.ok) throw new Error("Tidak dapat memuat soal.csv");
         const teks = await res.text();
-        
+
         const baris = teks.split("\n").map(r => {
             const hasil = [];
             let bagian = "", dalamKutip = false;
@@ -390,7 +386,7 @@ async function ambilSoal() {
             hasil.push(bagian.trim());
             return hasil;
         });
-        
+
         daftarSoal = [];
         for (let i = 1; i < baris.length; i++) {
             const k = baris[i];
@@ -401,18 +397,22 @@ async function ambilSoal() {
                 keterangan: k[2] ? k[2].replace(/^"|"$/g, "") : ""
             });
         }
+
+        // ✅ BARU — Acak urutan soal setelah CSV berhasil dimuat
+        acakArray(daftarSoal);
+
     } catch (err) {
         daftarSoal = [
             { soal: "Gaya yang mendorong benda disebut...", jawaban: "DORONGAN", keterangan: "8 huruf" },
             { soal: "Satuan gaya adalah...", jawaban: "NEWTON", keterangan: "6 huruf" },
             { soal: "Prinsip kerja Stack adalah...", jawaban: "LIFO", keterangan: "4 huruf" }
         ];
+        // ✅ BARU — Acak juga untuk fallback
+        acakArray(daftarSoal);
     }
-    
+
     soalSudahDimuat = true;
     document.getElementById("area-muat").style.display = "none";
-    // Area soal TETAP tersembunyi sampai diklik Mulai
-    acakArray(daftarSoal);
 }
 
 // === FUNGSI MULAI PERMAINAN ===
@@ -422,15 +422,18 @@ function mulaiPermainan() {
         return;
     }
 
-    acakArray(daftarSoal);   // ⬅️ acak ulang tiap mulai
+    // ✅ BARU — Acak ulang soal tiap sesi mulai (jaga-jaga jika dipanggil ulang)
+    acakArray(daftarSoal);
+
+    // ✅ BARU — Reset state & timer jika sebelumnya ada
+    if (timerCountdown) clearInterval(timerCountdown);
     nomor = 0;
-    
-    // Sembunyikan tampilan awal
+    sudahSelesai = false;
+
     document.getElementById("area-awal").style.display = "none";
-    // Tampilkan soal
     document.getElementById("area-soal").style.display = "block";
     document.getElementById("jumlah-soal").textContent = daftarSoal.length;
-    
+
     tampilSoal();
 }
 
@@ -454,7 +457,7 @@ function toggleJeda() {
     sedangDijeda = !sedangDijeda;
     const btn = document.getElementById("btn-mulai-jeda");
     btn.textContent = sedangDijeda ? "▶️ Lanjut" : "⏸️ Jeda";
-    
+
     if (sedangDijeda) {
         if (timerCountdown) clearInterval(timerCountdown);
     } else {
@@ -469,15 +472,15 @@ function tampilSoal() {
     sedangDijeda = false;
     document.getElementById("btn-mulai-jeda").textContent = "⏸️ Jeda";
     jawabanBenar = daftarSoal[nomor].jawaban;
-    
+
     urutanBagian.forEach(id => {
         document.getElementById(id).style.display = "none";
     });
-    
+
     const jumlahHuruf = jawabanBenar.length;
     maksKesempatan = Math.min(Math.ceil(jumlahHuruf / 2), 10);
     sisaKesempatan = maksKesempatan;
-    
+
     document.getElementById("nomor-soal").textContent = nomor + 1;
     document.getElementById("teks-soal").textContent = daftarSoal[nomor].soal;
     document.getElementById("pesan").style.display = "none";
@@ -485,7 +488,7 @@ function tampilSoal() {
     document.getElementById("tombol-sebelumnya").style.display = nomor > 0 ? "inline-block" : "none";
     document.getElementById("btn-ulang").disabled = false;
     perbaruiInfoKesempatan();
-    
+
     const wadah = document.getElementById("wadah-kotak");
     wadah.innerHTML = "";
     for (let i = 0; i < jumlahHuruf; i++) {
@@ -497,7 +500,7 @@ function tampilSoal() {
         kolom.appendChild(kotak);
         wadah.appendChild(kolom);
     }
-    
+
     buatPapanHuruf();
     mulaiUlangCountdown();
 }
@@ -512,13 +515,13 @@ function mulaiUlangCountdown() {
 
 function jalankanCountdown() {
     if (timerCountdown) clearInterval(timerCountdown);
-    
+
     timerCountdown = setInterval(() => {
         if (sedangDijeda || sudahSelesai) return;
-        
+
         sisaWaktu--;
         perbaruiTampilanWaktu();
-        
+
         if (sisaWaktu <= 0) {
             clearInterval(timerCountdown);
             waktuHabis();
@@ -529,7 +532,7 @@ function jalankanCountdown() {
 function perbaruiTampilanWaktu() {
     const el = document.getElementById("kotak-waktu");
     el.textContent = `⏱️ ${sisaWaktu} dtk`;
-    
+
     el.className = "countdown-box";
     if (sisaWaktu > detikPerSoal * 0.5) {
         el.classList.add("normal");
@@ -545,49 +548,35 @@ function waktuHabis() {
     const pesanEl = document.getElementById("pesan");
     pesanEl.textContent = "⏰ Waktu habis! Jawaban: " + jawabanBenar;
     pesanEl.className = "pesan salah";
-    
+
     for (let i = 0; i < jawabanBenar.length; i++) {
         const kotak = document.getElementById(`kotak-${i}`);
         kotak.textContent = jawabanBenar[i];
         kotak.classList.add("terisi");
     }
-    
+
     while (bagianTerbentuk < urutanBagian.length) {
         document.getElementById(urutanBagian[bagianTerbentuk]).style.display = "block";
         bagianTerbentuk++;
     }
-    
+
     document.getElementById("btn-ulang").disabled = true;
     if (nomor < daftarSoal.length - 1) {
         document.getElementById("tombol-berikutnya").style.display = "inline-block";
     }
 }
 
-// function buatPapanHuruf() {
-//     const papan = document.getElementById("papan-huruf");
-//     papan.innerHTML = "";
-//     for (let kode = 65; kode <= 90; kode++) {
-//         const huruf = String.fromCharCode(kode);
-//         const tombol = document.createElement("button");
-//         tombol.className = "btn-huruf";
-//         tombol.textContent = huruf;
-//         tombol.id = `huruf-${huruf}`;
-//         tombol.onclick = () => pilihHuruf(huruf);
-//         papan.appendChild(tombol);
-//     }
-// }
-
 function buatPapanHuruf() {
     const papan = document.getElementById("papan-huruf");
     papan.innerHTML = "";
-    
-    // ✅ Buat array A-Z lalu acak
+
+    // ✅ BARU — Buat array A–Z, acak, lalu render
     const semuaHuruf = [];
     for (let kode = 65; kode <= 90; kode++) {
         semuaHuruf.push(String.fromCharCode(kode));
     }
-    acakArray(semuaHuruf);   // ⬅️ baris baru
-    
+    acakArray(semuaHuruf);
+
     semuaHuruf.forEach(huruf => {
         const tombol = document.createElement("button");
         tombol.className = "btn-huruf";
@@ -596,14 +585,14 @@ function buatPapanHuruf() {
         tombol.onclick = () => pilihHuruf(huruf);
         papan.appendChild(tombol);
     });
-}    
+}
 
 function pilihHuruf(huruf) {
     if (sudahSelesai || hurufTerpakai.has(huruf) || sedangDijeda) return;
-    
+
     hurufTerpakai.add(huruf);
     const tombol = document.getElementById(`huruf-${huruf}`);
-    
+
     if (jawabanBenar.includes(huruf)) {
         tombol.classList.add("benar", "terpakai");
         for (let i = 0; i < jawabanBenar.length; i++) {
@@ -619,7 +608,7 @@ function pilihHuruf(huruf) {
         tampilkanBagianBerikutnya();
         sisaKesempatan--;
         perbaruiInfoKesempatan();
-        
+
         if (sisaKesempatan <= 0) {
             clearInterval(timerCountdown);
             tampilkanJawabanLengkap();
@@ -638,18 +627,18 @@ function cekSelesai() {
     const semuaTerisi = [...jawabanBenar].every((_, i) => {
         return document.getElementById(`kotak-${i}`).textContent !== "";
     });
-    
+
     if (semuaTerisi) {
         sudahSelesai = true;
         clearInterval(timerCountdown);
-        
+
         munculkanPerayaan();
-        
+
         const pesanEl = document.getElementById("pesan");
         pesanEl.textContent = "✅ BENAR! " + (daftarSoal[nomor].keterangan || "");
         pesanEl.className = "pesan benar";
         document.getElementById("btn-ulang").disabled = true;
-        
+
         if (nomor < daftarSoal.length - 1) {
             document.getElementById("tombol-berikutnya").style.display = "inline-block";
         } else {
@@ -672,7 +661,7 @@ function munculkanPerayaan() {
             setTimeout(() => gelembung.remove(), 2000);
         }, i * 100);
     }
-    
+
     const teks = document.createElement("div");
     teks.className = "teks-perayaan";
     teks.textContent = "🎉 BENAR! 🎉";
@@ -682,18 +671,18 @@ function munculkanPerayaan() {
 
 function tampilkanJawabanLengkap() {
     sudahSelesai = true;
-    
+
     for (let i = 0; i < jawabanBenar.length; i++) {
         const kotak = document.getElementById(`kotak-${i}`);
         kotak.textContent = jawabanBenar[i];
         kotak.classList.add("terisi");
     }
-    
+
     while (bagianTerbentuk < urutanBagian.length) {
         document.getElementById(urutanBagian[bagianTerbentuk]).style.display = "block";
         bagianTerbentuk++;
     }
-    
+
     for (let kode = 65; kode <= 90; kode++) {
         const huruf = String.fromCharCode(kode);
         if (jawabanBenar.includes(huruf)) {
@@ -701,12 +690,12 @@ function tampilkanJawabanLengkap() {
             if (tombol) tombol.classList.add("benar", "terpakai");
         }
     }
-    
+
     const pesanEl = document.getElementById("pesan");
     pesanEl.textContent = "❌ Kesempatan habis! Jawaban: " + jawabanBenar;
     pesanEl.className = "pesan salah";
     document.getElementById("btn-ulang").disabled = true;
-    
+
     if (nomor < daftarSoal.length - 1) {
         document.getElementById("tombol-berikutnya").style.display = "inline-block";
     }
