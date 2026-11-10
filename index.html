@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tebak Kata Pembelajaran — Countdown & Soal Teracak</title>
+    <title>Tebak Kata Pembelajaran — Layout Baru</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body {
@@ -18,7 +18,7 @@
         }
         h1 { color: #2c3e50; margin-bottom: 20px; font-size: 1.5rem; text-align: center; }
 
-        /* === TAMPILAN AWAL & TOMBOL MULAI === */
+        /* === TAMPILAN AWAL === */
         .awal-area {
             background: white;
             padding: 40px 30px;
@@ -29,11 +29,7 @@
             text-align: center;
             z-index: 2;
         }
-        .awal-area p {
-            color: #555;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
+        .awal-area p { color: #555; margin-bottom: 25px; line-height: 1.6; }
         .tombol-mulai-utama {
             padding: 15px 40px;
             background: #2ecc71;
@@ -45,31 +41,33 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        .tombol-mulai-utama:hover {
-            background: #27ae60;
-            transform: scale(1.05);
-        }
+        .tombol-mulai-utama:hover { background: #27ae60; transform: scale(1.05); }
 
+        /* ✅ BARU — Lebar soal-box ditambah dari 850px → 1150px */
         .soal-box {
             background: white;
             padding: 25px 30px;
             border-radius: 16px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-            max-width: 850px;
+            max-width: 1150px;
             width: 100%;
             position: relative;
             z-index: 1;
             display: none;
         }
+
+        /* ✅ BARU — .atas: 2 kolom (info kiri, hangman+abjad kanan) */
         .atas {
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: space-between;
+            gap: 15px;
             align-items: flex-start;
+            flex-wrap: wrap;
             margin-bottom: 25px;
         }
-        .info-area { flex: 1; min-width: 300px; }
+        .info-area {
+            flex: 1 1 320px;
+            min-width: 280px;
+        }
         .info-baris {
             display: flex;
             justify-content: space-between;
@@ -83,6 +81,7 @@
         .kesempatan.aman { color: #2ecc71; }
         .kesempatan.sedang { color: #f39c12; }
         .kesempatan.berbahaya { color: #e74c3c; }
+
         .countdown-box {
             background: #f0f0f0;
             padding: 8px 16px;
@@ -96,10 +95,8 @@
         .countdown-box.normal { background: #d4edda; color: #155724; }
         .countdown-box.hampir { background: #fff3cd; color: #856404; }
         .countdown-box.kritis { background: #f8d7da; color: #721c24; animation: kedip 0.8s infinite; }
-        @keyframes kedip {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
+        @keyframes kedip { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
         .pengaturan-waktu {
             background: #eef2f5;
             padding: 12px 16px;
@@ -111,26 +108,17 @@
             align-items: center;
             justify-content: center;
         }
-        .pengaturan-waktu label {
-            font-weight: 500;
-            color: #2c3e50;
-        }
+        .pengaturan-waktu label { font-weight: 500; color: #2c3e50; }
         .pengaturan-waktu input {
-            width: 60px;
-            padding: 6px 8px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-            text-align: center;
+            width: 60px; padding: 6px 8px;
+            border: 2px solid #ddd; border-radius: 6px;
+            font-size: 1rem; text-align: center;
         }
         .pengaturan-waktu button {
             padding: 6px 14px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
+            background: #3498db; color: white;
+            border: none; border-radius: 6px;
+            cursor: pointer; font-weight: bold;
             transition: background 0.2s;
         }
         .pengaturan-waktu button:hover { background: #2980b9; }
@@ -143,16 +131,27 @@
             line-height: 1.6;
             font-weight: 500;
         }
+
+        /* ✅ BARU — Kanan: hangman + papan abjad sejajar */
+        .kanan-area {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+            flex: 0 1 auto;
+            flex-wrap: wrap;
+        }
+
         .hangman-area {
-            width: 200px;
-            height: 250px;
+            width: 180px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid #ddd;
+            box-sizing: border-box;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 15px;
-            border: 2px solid #ddd;
+            flex: 0 0 auto;
         }
         .hangman { position: relative; width: 120px; height: 200px; }
         .tiang-vertikal, .tiang-melintang, .tiang-miring, .kaitan,
@@ -173,23 +172,58 @@
         .kaki-kiri { width: 4px; height: 35px; top: 130px; left: 50%; transform: translateX(-50%) rotate(-35deg); transform-origin: top center; }
         .kaki-kanan { width: 4px; height: 35px; top: 130px; left: 50%; transform: translateX(-50%) rotate(35deg); transform-origin: top center; }
 
+        /* ✅ BARU — Papan huruf/angka/karakter di kanan, sejajar hangman */
+        .papan-huruf {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-content: flex-start;
+            width: 340px;
+            max-width: 100%;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            box-sizing: border-box;
+            flex: 0 0 auto;
+        }
+        /* ✅ BARU — Tombol lebih kecil agar 54 karakter muat rapi */
+        .btn-huruf {
+            width: 30px; height: 30px;
+            border: none; border-radius: 6px;
+            background: #3498db; color: white;
+            font-size: 0.8rem; font-weight: bold;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-huruf:hover { transform: scale(1.1); background: #2980b9; }
+        .btn-huruf.terpakai { background: #95a5a6; cursor: not-allowed; transform: none; }
+        .btn-huruf.benar { background: #2ecc71; }
+        .btn-huruf.salah { background: #e74c3c; }
+
+        /* ✅ BARU — Kotak jawaban: flex-wrap untuk 2 baris */
         .kotak-besar {
             display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             border: 4px solid #2c3e50;
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 30px;
             width: 100%;
+            box-sizing: border-box;
         }
-        .kolom { flex: 1; border-right: 3px solid #2c3e50; }
-        .kolom:last-child { border-right: none; }
+        .kolom { box-sizing: border-box; border-right: 3px solid #2c3e50; border-bottom: 3px solid #2c3e50; }
+        .kolom.kolom-terakhir { border-right: none; }
+        .kolom.baris-terakhir { border-bottom: none; }
+
         .kotak {
             width: 100%;
-            height: 85px;
+            height: 78px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: #2c3e50;
             background: #fff;
@@ -197,32 +231,13 @@
         }
         .kotak.terisi { background: #d4edda; color: #155724; }
 
-        .papan-huruf {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-            margin-bottom: 25px;
-        }
-        .btn-huruf {
-            width: 38px; height: 44px;      /* ← semula 42 × 48 */
-            border: none; border-radius: 8px;
-            background: #3498db; color: white;
-            font-size: 1rem;                 /* ← semula 1.1rem */
-            font-weight: bold; cursor: pointer;
-            transition: all 0.2s;
-            flex: 0 0 auto;                  /* ← biar tidak menyusut */
-        }
-        .btn-huruf:hover { transform: scale(1.1); background: #2980b9; }
-        .btn-huruf.terpakai { background: #95a5a6; cursor: not-allowed; transform: none; }
-        .btn-huruf.benar { background: #2ecc71; }
-        .btn-huruf.salah { background: #e74c3c; }
         .pesan {
             margin-top: 15px; padding: 12px; border-radius: 10px;
             text-align: center; font-weight: bold; display: none;
         }
         .pesan.benar { background: #d4edda; color: #155724; display: block; }
         .pesan.salah { background: #f8d7da; color: #721c24; display: block; }
+
         .tombol-group {
             display: flex; gap: 12px; flex-wrap: wrap;
             justify-content: center; margin-top: 10px;
@@ -236,9 +251,7 @@
         .tombol:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .tombol-ulang { background: #f39c12; color: white; }
         .tombol-lanjut { background: #2ecc71; color: white; display: none; }
-        .nav-soal {
-            display: flex; justify-content: space-between; margin-top: 20px;
-        }
+        .nav-soal { display: flex; justify-content: space-between; margin-top: 20px; }
         .tombol-mundur { background: #95a5a6; color: white; display: none; }
         .muat-info { text-align: center; color: #7f8c8d; padding: 30px; }
 
@@ -273,12 +286,19 @@
             70% { transform: translate(-50%, -50%) scale(0.95); }
             100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
         }
+
+        /* ✅ BARU — Mobile: susun ulang agar tidak meluber */
+        @media (max-width: 720px) {
+            .papan-huruf { width: 100%; }
+            .kanan-area { flex-direction: column; align-items: stretch; width: 100%; }
+            .hangman-area { width: 100%; justify-content: center; }
+            .kotak { height: 65px; font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
-    <h1>📝 Tebak Kata — Dengan Waktu & Soal Teracak</h1>
+    <h1>📝 Tebak Kata — Layout Baru</h1>
 
-    <!-- === TAMPILAN AWAL: TOMBOL MULAI === -->
     <div class="awal-area" id="area-awal">
         <p>Selamat datang di kuis tebak kata! <br>Soal akan diacak setiap sesi. Siapkan dirimu, waktu akan berjalan saat mulai.</p>
         <button class="tombol-mulai-utama" id="btn-mulai" onclick="mulaiPermainan()">🎮 MULAI</button>
@@ -291,7 +311,6 @@
 
     <div class="soal-box" id="area-soal">
 
-        <!-- ⏱️ PENGATURAN WAKTU -->
         <div class="pengaturan-waktu">
             <label>Waktu per soal:</label>
             <input type="number" id="input-detik" min="10" max="600" value="60">
@@ -300,6 +319,7 @@
             <button id="btn-mulai-jeda" onclick="toggleJeda()">⏸️ Jeda</button>
         </div>
 
+        <!-- ✅ BARU — .atas: info kiri, kanan-area berisi hangman + papan huruf -->
         <div class="atas">
             <div class="info-area">
                 <div class="info-baris">
@@ -310,24 +330,26 @@
                 <div class="teks-soal" id="teks-soal"></div>
             </div>
 
-            <div class="hangman-area">
-                <div class="hangman" id="hangman">
-                    <div class="tiang-vertikal" id="bagian-1"></div>
-                    <div class="tiang-melintang" id="bagian-2"></div>
-                    <div class="tiang-miring" id="bagian-3"></div>
-                    <div class="kaitan" id="bagian-4"></div>
-                    <div class="kepala" id="bagian-5"></div>
-                    <div class="badan" id="bagian-6"></div>
-                    <div class="lengan-kiri" id="bagian-7"></div>
-                    <div class="lengan-kanan" id="bagian-8"></div>
-                    <div class="kaki-kiri" id="bagian-9"></div>
-                    <div class="kaki-kanan" id="bagian-10"></div>
+            <div class="kanan-area">
+                <div class="hangman-area">
+                    <div class="hangman" id="hangman">
+                        <div class="tiang-vertikal" id="bagian-1"></div>
+                        <div class="tiang-melintang" id="bagian-2"></div>
+                        <div class="tiang-miring" id="bagian-3"></div>
+                        <div class="kaitan" id="bagian-4"></div>
+                        <div class="kepala" id="bagian-5"></div>
+                        <div class="badan" id="bagian-6"></div>
+                        <div class="lengan-kiri" id="bagian-7"></div>
+                        <div class="lengan-kanan" id="bagian-8"></div>
+                        <div class="kaki-kiri" id="bagian-9"></div>
+                        <div class="kaki-kanan" id="bagian-10"></div>
+                    </div>
                 </div>
+                <div class="papan-huruf" id="papan-huruf"></div>
             </div>
         </div>
 
         <div class="kotak-besar" id="wadah-kotak"></div>
-        <div class="papan-huruf" id="papan-huruf"></div>
         <div class="pesan" id="pesan"></div>
 
         <div class="tombol-group">
@@ -360,16 +382,16 @@ const urutanBagian = ["bagian-1", "bagian-2", "bagian-3", "bagian-4",
                       "bagian-5", "bagian-6", "bagian-7", "bagian-8",
                       "bagian-9", "bagian-10"];
 
-// ✅ BARU — Daftar karakter papan tombol (urut, tidak diacak)
+// ✅ BARU — Daftar karakter papan tombol (A-Z, 0-9, simbol)
 const KARAKTER = [
-    ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ",        // A–Z
-    ..."0123456789",                         // 0–9
-    "-", ".", "'", ",", "?", "!",            // tanda baca umum
-    ":", ";", "/", "(", ")",                 // tanda baca lanjutan
-    "&", "%", "@", "#", "*", "+", "="        // simbol
+    ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    ..."0123456789",
+    "-", ".", "'", ",", "?", "!",
+    ":", ";", "/", "(", ")",
+    "&", "%", "@", "#", "*", "+", "="
 ];
 
-// ✅ BARU — Fungsi acak array (Fisher-Yates Shuffle)
+// ✅ Fungsi acak array (Fisher-Yates Shuffle)
 function acakArray(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -378,7 +400,6 @@ function acakArray(arr) {
     return arr;
 }
 
-// Muat soal saat halaman dibuka
 ambilSoal();
 
 async function ambilSoal() {
@@ -410,16 +431,13 @@ async function ambilSoal() {
             });
         }
 
-        // ✅ BARU — Acak urutan soal setelah CSV berhasil dimuat
         acakArray(daftarSoal);
-
     } catch (err) {
         daftarSoal = [
             { soal: "Gaya yang mendorong benda disebut...", jawaban: "DORONGAN", keterangan: "8 huruf" },
             { soal: "Satuan gaya adalah...", jawaban: "NEWTON", keterangan: "6 huruf" },
             { soal: "Prinsip kerja Stack adalah...", jawaban: "LIFO", keterangan: "4 huruf" }
         ];
-        // ✅ BARU — Acak juga untuk fallback
         acakArray(daftarSoal);
     }
 
@@ -427,17 +445,13 @@ async function ambilSoal() {
     document.getElementById("area-muat").style.display = "none";
 }
 
-// === FUNGSI MULAI PERMAINAN ===
 function mulaiPermainan() {
     if (!soalSudahDimuat) {
         alert("Soal belum siap, tunggu sebentar ya!");
         return;
     }
 
-    // ✅ BARU — Acak ulang soal tiap sesi mulai (jaga-jaga jika dipanggil ulang)
     acakArray(daftarSoal);
-
-    // ✅ BARU — Reset state & timer jika sebelumnya ada
     if (timerCountdown) clearInterval(timerCountdown);
     nomor = 0;
     sudahSelesai = false;
@@ -449,27 +463,22 @@ function mulaiPermainan() {
     tampilSoal();
 }
 
-// ⏱️ Terapkan waktu yang diatur pengguna
 function terapkanWaktu() {
     const input = document.getElementById("input-detik");
     const nilai = parseInt(input.value);
     if (nilai >= 10 && nilai <= 600) {
         detikPerSoal = nilai;
-        if (!sudahSelesai) {
-            mulaiUlangCountdown();
-        }
+        if (!sudahSelesai) mulaiUlangCountdown();
         return true;
     }
     alert("Masukkan angka antara 10–600 detik!");
     return false;
 }
 
-// ⏸️ Jeda / Lanjutkan
 function toggleJeda() {
     sedangDijeda = !sedangDijeda;
     const btn = document.getElementById("btn-mulai-jeda");
     btn.textContent = sedangDijeda ? "▶️ Lanjut" : "⏸️ Jeda";
-
     if (sedangDijeda) {
         if (timerCountdown) clearInterval(timerCountdown);
     } else {
@@ -485,9 +494,7 @@ function tampilSoal() {
     document.getElementById("btn-mulai-jeda").textContent = "⏸️ Jeda";
     jawabanBenar = daftarSoal[nomor].jawaban;
 
-    urutanBagian.forEach(id => {
-        document.getElementById(id).style.display = "none";
-    });
+    urutanBagian.forEach(id => document.getElementById(id).style.display = "none");
 
     const jumlahHuruf = jawabanBenar.length;
     maksKesempatan = Math.min(Math.ceil(jumlahHuruf / 2), 10);
@@ -501,11 +508,28 @@ function tampilSoal() {
     document.getElementById("btn-ulang").disabled = false;
     perbaruiInfoKesempatan();
 
+    // ✅ BARU — Bangun kotak: 1 baris (≤10) atau 2 baris (>10)
     const wadah = document.getElementById("wadah-kotak");
     wadah.innerHTML = "";
+    const perRow = jumlahHuruf <= 10 ? jumlahHuruf : Math.ceil(jumlahHuruf / 2);
+    const totalBaris = Math.ceil(jumlahHuruf / perRow);
+    const lebarPersen = 100 / perRow;
+
     for (let i = 0; i < jumlahHuruf; i++) {
         const kolom = document.createElement("div");
         kolom.className = "kolom";
+        kolom.style.flex = "0 0 " + lebarPersen + "%";
+        kolom.style.maxWidth = lebarPersen + "%";
+
+        const baris = Math.floor(i / perRow);
+        const posisi = i % perRow;
+        const jumlahDiBaris = baris === totalBaris - 1
+            ? jumlahHuruf - baris * perRow
+            : perRow;
+
+        if (posisi === jumlahDiBaris - 1) kolom.classList.add("kolom-terakhir");
+        if (baris === totalBaris - 1) kolom.classList.add("baris-terakhir");
+
         const kotak = document.createElement("div");
         kotak.className = "kotak";
         kotak.id = `kotak-${i}`;
@@ -517,7 +541,6 @@ function tampilSoal() {
     mulaiUlangCountdown();
 }
 
-// ⏱️ Mulai ulang countdown dari awal
 function mulaiUlangCountdown() {
     if (timerCountdown) clearInterval(timerCountdown);
     sisaWaktu = detikPerSoal;
@@ -527,13 +550,10 @@ function mulaiUlangCountdown() {
 
 function jalankanCountdown() {
     if (timerCountdown) clearInterval(timerCountdown);
-
     timerCountdown = setInterval(() => {
         if (sedangDijeda || sudahSelesai) return;
-
         sisaWaktu--;
         perbaruiTampilanWaktu();
-
         if (sisaWaktu <= 0) {
             clearInterval(timerCountdown);
             waktuHabis();
@@ -544,15 +564,10 @@ function jalankanCountdown() {
 function perbaruiTampilanWaktu() {
     const el = document.getElementById("kotak-waktu");
     el.textContent = `⏱️ ${sisaWaktu} dtk`;
-
     el.className = "countdown-box";
-    if (sisaWaktu > detikPerSoal * 0.5) {
-        el.classList.add("normal");
-    } else if (sisaWaktu > detikPerSoal * 0.2) {
-        el.classList.add("hampir");
-    } else {
-        el.classList.add("kritis");
-    }
+    if (sisaWaktu > detikPerSoal * 0.5) el.classList.add("normal");
+    else if (sisaWaktu > detikPerSoal * 0.2) el.classList.add("hampir");
+    else el.classList.add("kritis");
 }
 
 function waktuHabis() {
@@ -578,11 +593,10 @@ function waktuHabis() {
     }
 }
 
-// ✅ BARU — Papan tombol urut: A–Z, 0–9, lalu karakter khusus
+// ✅ BARU — Papan tombol: semua KARAKTER, urut, tidak diacak
 function buatPapanHuruf() {
     const papan = document.getElementById("papan-huruf");
     papan.innerHTML = "";
-
     KARAKTER.forEach(kar => {
         const tombol = document.createElement("button");
         tombol.className = "btn-huruf";
@@ -595,7 +609,6 @@ function buatPapanHuruf() {
 
 function pilihHuruf(huruf) {
     if (sudahSelesai || hurufTerpakai.has(huruf) || sedangDijeda) return;
-
     hurufTerpakai.add(huruf);
     const tombol = document.getElementById(`huruf-${huruf}`);
 
@@ -614,7 +627,6 @@ function pilihHuruf(huruf) {
         tampilkanBagianBerikutnya();
         sisaKesempatan--;
         perbaruiInfoKesempatan();
-
         if (sisaKesempatan <= 0) {
             clearInterval(timerCountdown);
             tampilkanJawabanLengkap();
@@ -633,18 +645,14 @@ function cekSelesai() {
     const semuaTerisi = [...jawabanBenar].every((_, i) => {
         return document.getElementById(`kotak-${i}`).textContent !== "";
     });
-
     if (semuaTerisi) {
         sudahSelesai = true;
         clearInterval(timerCountdown);
-
         munculkanPerayaan();
-
         const pesanEl = document.getElementById("pesan");
         pesanEl.textContent = "✅ BENAR! " + (daftarSoal[nomor].keterangan || "");
         pesanEl.className = "pesan benar";
         document.getElementById("btn-ulang").disabled = true;
-
         if (nomor < daftarSoal.length - 1) {
             document.getElementById("tombol-berikutnya").style.display = "inline-block";
         } else {
@@ -667,7 +675,6 @@ function munculkanPerayaan() {
             setTimeout(() => gelembung.remove(), 2000);
         }, i * 100);
     }
-
     const teks = document.createElement("div");
     teks.className = "teks-perayaan";
     teks.textContent = "🎉 BENAR! 🎉";
@@ -677,32 +684,26 @@ function munculkanPerayaan() {
 
 function tampilkanJawabanLengkap() {
     sudahSelesai = true;
-
-    // ✅ BARU — pakai KARAKTER, mencakup angka & simbol juga
+    for (let i = 0; i < jawabanBenar.length; i++) {
+        const kotak = document.getElementById(`kotak-${i}`);
+        kotak.textContent = jawabanBenar[i];
+        kotak.classList.add("terisi");
+    }
+    while (bagianTerbentuk < urutanBagian.length) {
+        document.getElementById(urutanBagian[bagianTerbentuk]).style.display = "block";
+        bagianTerbentuk++;
+    }
+    // ✅ BARU — Highlight pakai KARAKTER (mencakup angka & simbol juga)
     KARAKTER.forEach(kar => {
         if (jawabanBenar.includes(kar)) {
             const tombol = document.getElementById(`huruf-${kar}`);
             if (tombol) tombol.classList.add("benar", "terpakai");
         }
     });
-    while (bagianTerbentuk < urutanBagian.length) {
-        document.getElementById(urutanBagian[bagianTerbentuk]).style.display = "block";
-        bagianTerbentuk++;
-    }
-
-    for (let kode = 65; kode <= 90; kode++) {
-        const huruf = String.fromCharCode(kode);
-        if (jawabanBenar.includes(huruf)) {
-            const tombol = document.getElementById(`huruf-${huruf}`);
-            if (tombol) tombol.classList.add("benar", "terpakai");
-        }
-    }
-
     const pesanEl = document.getElementById("pesan");
     pesanEl.textContent = "❌ Kesempatan habis! Jawaban: " + jawabanBenar;
     pesanEl.className = "pesan salah";
     document.getElementById("btn-ulang").disabled = true;
-
     if (nomor < daftarSoal.length - 1) {
         document.getElementById("tombol-berikutnya").style.display = "inline-block";
     }
