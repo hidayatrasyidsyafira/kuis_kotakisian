@@ -205,10 +205,13 @@
             margin-bottom: 25px;
         }
         .btn-huruf {
-            width: 42px; height: 48px; border: none; border-radius: 8px;
+            width: 38px; height: 44px;      /* ← semula 42 × 48 */
+            border: none; border-radius: 8px;
             background: #3498db; color: white;
-            font-size: 1.1rem; font-weight: bold; cursor: pointer;
+            font-size: 1rem;                 /* ← semula 1.1rem */
+            font-weight: bold; cursor: pointer;
             transition: all 0.2s;
+            flex: 0 0 auto;                  /* ← biar tidak menyusut */
         }
         .btn-huruf:hover { transform: scale(1.1); background: #2980b9; }
         .btn-huruf.terpakai { background: #95a5a6; cursor: not-allowed; transform: none; }
@@ -356,6 +359,15 @@ let soalSudahDimuat = false;
 const urutanBagian = ["bagian-1", "bagian-2", "bagian-3", "bagian-4",
                       "bagian-5", "bagian-6", "bagian-7", "bagian-8",
                       "bagian-9", "bagian-10"];
+
+// ✅ BARU — Daftar karakter papan tombol (urut, tidak diacak)
+const KARAKTER = [
+    ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ",        // A–Z
+    ..."0123456789",                         // 0–9
+    "-", ".", "'", ",", "?", "!",            // tanda baca umum
+    ":", ";", "/", "(", ")",                 // tanda baca lanjutan
+    "&", "%", "@", "#", "*", "+", "="        // simbol
+];
 
 // ✅ BARU — Fungsi acak array (Fisher-Yates Shuffle)
 function acakArray(arr) {
@@ -566,23 +578,17 @@ function waktuHabis() {
     }
 }
 
+// ✅ BARU — Papan tombol urut: A–Z, 0–9, lalu karakter khusus
 function buatPapanHuruf() {
     const papan = document.getElementById("papan-huruf");
     papan.innerHTML = "";
 
-    // ✅ BARU — Buat array A–Z, acak, lalu render
-    const semuaHuruf = [];
-    for (let kode = 65; kode <= 90; kode++) {
-        semuaHuruf.push(String.fromCharCode(kode));
-    }
-    acakArray(semuaHuruf);
-
-    semuaHuruf.forEach(huruf => {
+    KARAKTER.forEach(kar => {
         const tombol = document.createElement("button");
         tombol.className = "btn-huruf";
-        tombol.textContent = huruf;
-        tombol.id = `huruf-${huruf}`;
-        tombol.onclick = () => pilihHuruf(huruf);
+        tombol.textContent = kar;
+        tombol.id = `huruf-${kar}`;
+        tombol.onclick = () => pilihHuruf(kar);
         papan.appendChild(tombol);
     });
 }
@@ -672,12 +678,13 @@ function munculkanPerayaan() {
 function tampilkanJawabanLengkap() {
     sudahSelesai = true;
 
-    for (let i = 0; i < jawabanBenar.length; i++) {
-        const kotak = document.getElementById(`kotak-${i}`);
-        kotak.textContent = jawabanBenar[i];
-        kotak.classList.add("terisi");
-    }
-
+    // ✅ BARU — pakai KARAKTER, mencakup angka & simbol juga
+    KARAKTER.forEach(kar => {
+        if (jawabanBenar.includes(kar)) {
+            const tombol = document.getElementById(`huruf-${kar}`);
+            if (tombol) tombol.classList.add("benar", "terpakai");
+        }
+    });
     while (bagianTerbentuk < urutanBagian.length) {
         document.getElementById(urutanBagian[bagianTerbentuk]).style.display = "block";
         bagianTerbentuk++;
