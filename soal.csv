@@ -1,11 +1,61 @@
 soal,jawaban,keterangan
-Fungsi SUMIFS digunakan untuk penjumlahan dengan berapa kriteria?,BANYAK,artinya satu syarat atau lebih
-Bagian yang berisi rentang nilai yang akan dijumlahkan disebut?,SUM_RANGE,9 karakter: S-U-M_-R-A-N-G-E
-Bagian opsional yang berisi syarat kedua disebut?,CRITERIA_RANGE2,boleh ditambahkan atau tidak
-Penulisan pasangan syarat dalam rumus SUMIFS dipisahkan dengan?,TITIKKOMMA,simbol: ;
-Kriteria yang diterapkan pada rentang pertama ditentukan oleh bagian?,CRITERIA1,berpasangan dengan criteria_range1
-SUMIFS berbeda dengan SUMIF karena bisa memakai berapa syarat?,LEBIHDARI1,satu syarat atau lebih
-Apa nama rentang sel yang akan diuji sesuai kriteria pertama?,CRITERIA_RANGE1,berpasangan dengan criteria1
-Bagian mana dari SUMIFS yang wajib diisi?,SUM_RANGE,harus ada saat menulis rumus
-Apa yang menjadi penentu sel mana yang dijumlahkan?,KRITERIA,syarat yang ditetapkan
-Apakah boleh menambahkan lebih dari dua pasang syarat di SUMIFS?,BOLEH,sesuai kebutuhan pengguna
+Cara mengatur menyimpan dan mengelola data di komputer disebut?,STRUKTURDATA,agar data mudah diakses dan dikelola efisien
+Struktur data yang menyimpan data secara berurutan disebut?,LIST,setiap data disebut elemen
+Nomor urut posisi data di dalam list disebut?,INDEKS,data dicari berdasarkan posisi ini
+Sifat data di dalam list dapat berupa?,BERBAGAITIPE,angka teks huruf maupun objek
+Operasi menambah data di list disebut?,TAMBAH,menyisipkan elemen baru
+Operasi menghapus data di list disebut?,HAPUS,membuang elemen tertentu
+Mengubah isi data di dalam list disebut?,UBAH,memperbarui nilai elemen
+Sifat utama penyusunan data di list adalah?,BERURUTAN,teratur satu setelah lainnya
+Apakah list cocok untuk data jumlah berubah-ubah?,YA,sangat fleksibel
+Kekurangan list jika data sangat besar adalah?,KURANGEFISIEN,proses pencarian lebih lama
+Contoh penerapan list daftar nama siswa disebut?,DAFTARHADIR,terurut berdasarkan nomor
+Daftar lagu yang diputar berurutan termasuk contoh?,PLAYLIST,disusun urutan pemutaran
+Sebutkan contoh list berisi nomor urut nilai siswa?,DAFTARNILAI,disusun berdasarkan indeks
+Apakah elemen di list bisa diakses langsung berdasarkan posisi?,YA,melalui nomor indeks
+Sebutkan kelebihan utama list selain fleksibel?,MUDAHDIGUNAKAN,sangat sederhana dipelajari
+Apakah jumlah data di list harus tetap sejak awal?,TIDAK,bisa bertambah maupun berkurang
+Sebutkan contoh list di alat komunikasi?,KONTAKTELEPON,daftar nama nomor tersusun rapi
+Daftar pilihan makanan di restoran termasuk contoh?,DAFTARMENU,terurut nomor urut
+Apakah list hanya menyimpan data angka saja?,TIDAK,berbagai jenis data bisa disimpan
+Mengapa pemilihan struktur data penting?,AGAREFISIEN,mempermudah pengolahan data
+Prinsip kerja Stack adalah?,LIFO,Last In First Out — terakhir masuk pertama keluar
+Kata LIFO kepanjangannya adalah?,LASTINFIRSTOUT,terakhir masuk pertama keluar
+Data yang terakhir masuk ke stack akan?,PERTAMAKELUAR,seperti tumpukan buku
+Menambah data ke bagian atas stack disebut?,PUSH,menumpuk ke atas
+Mengambil data dari bagian atas stack disebut?,POP,mengambil paling atas
+Melihat data paling atas tanpa menghapus disebut?,PEEK,atau juga disebut Top
+Contoh benda menyerupai stack adalah?,PIRING,tumpukan piring bersusun
+Fitur membatalkan perintah yang sudah dilakukan disebut?,UNDO,prinsip kerja stack
+Kembali ke halaman sebelumnya di peramban disebut?,BACK,memanfaatkan prinsip stack
+Buku yang diletakkan bertumpuk termasuk contoh?,STACK,diambil dari paling atas
+Satu-satunya akses langsung di stack adalah?,PALINGATAS,tidak bisa ambil di tengah
+Apakah bisa langsung mengambil data di tengah stack?,TIDAK,harus ambil yang di atas dulu
+Kecepatan menambah dan menghapus di stack adalah?,CEPAT,langsung di bagian atas
+Sebutkan kelebihan utama stack selain cepat?,SEDERHANA,struktur mudah dipahami
+Apakah stack cocok untuk proses pembatalan perintah?,YA,sangat tepat untuk Undo
+Jika memasukkan Buku A lalu Buku B, yang keluar duluan?,BUKUB,karena terakhir masuk
+Operasi mengambil data di stack bisa juga disebut?,HAPUS,data diambil sekaligus dihapus
+Apakah stack menyimpan data secara acak?,TIDAK,terurut ke atas
+Sebutkan kekurangan stack selain akses terbatas?,TIDAKBISAAMBILTENGAH,hanya dari bagian atas
+Prinsip LIFO berarti urutan keluar?,TERBALIKdari urutan masuk,yang terakhir duluan
+Prinsip kerja Queue adalah?,FIFO,First In First Out — pertama masuk pertama keluar
+Kata FIFO kepanjangannya adalah?,FIRSTINFIRSTOUT,pertama masuk pertama keluar
+Struktur data yang menyerupai antrean disebut?,QUEUE,datang duluan dilayani duluan
+Data yang masuk duluan akan keluar?,PERTAMA,sama seperti antrean beli tiket
+Tempat masuk data baru di queue disebut?,BELAKANG,ujung belakang atau belakang
+Tempat keluar data di queue disebut?,DEPAN,ujung depan dilayani duluan
+Menambah data ke queue disebut?,ENQUEUE,masuk ke bagian belakang
+Mengambil data dari queue disebut?,DEQUEUE,keluar dari bagian depan
+Contoh queue saat mencetak berkas di printer?,CETAKAN,diproses sesuai urutan dikirim
+Antrean kendaraan melewati gerbang tol termasuk contoh?,QUEUE,datang duluan lewat duluan
+Apakah bisa mengambil data di tengah queue secara langsung?,TIDAK,hanya dari ujung depan
+Kelebihan utama queue dalam memproses data adalah?,ADIL,sesuai urutan kedatangan
+Pemesanan tiket yang diproses berurutan termasuk contoh?,TIKET,sesuai waktu pemesanan
+Layanan pelanggan yang datang lebih dulu dilayani duluan disebut?,CUSTOMERSERVICE,menerapkan prinsip FIFO
+Sebutkan kekurangan queue selain akses terbatas?,TIDAKBISADIAMBILTENGAH,hanya depan dan belakang
+Apakah urutan data di queue tetap terjaga?,YA,sama seperti saat masuk
+Jika ada data di posisi belakang, kapan bisa keluar?,SETELAHdepan selesai,menunggu giliran
+Apakah queue cocok untuk membagi tugas secara merata?,YA,sesuai urutan masuk
+Apakah queue dan stack cara kerjanya sama?,TIDAK,queue FIFO stack LIFO
+Sebutkan perbedaan mendasar queue dengan stack?,URUTANKELUAR,queue sama dengan masuk stack terbalik
