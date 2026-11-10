@@ -363,7 +363,16 @@ const urutanBagian = ["bagian-1", "bagian-2", "bagian-3", "bagian-4",
 
 // Muat soal saat halaman dibuka (tetapi belum tampil)
 ambilSoal();
-
+// ✅ Fungsi Fisher-Yates Shuffle
+    
+function acakArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+    
 async function ambilSoal() {
     try {
         const res = await fetch("soal.csv", { cache: "no-store" });
@@ -403,6 +412,7 @@ async function ambilSoal() {
     soalSudahDimuat = true;
     document.getElementById("area-muat").style.display = "none";
     // Area soal TETAP tersembunyi sampai diklik Mulai
+    acakArray(daftarSoal);
 }
 
 // === FUNGSI MULAI PERMAINAN ===
@@ -411,6 +421,9 @@ function mulaiPermainan() {
         alert("Soal belum siap, tunggu sebentar ya!");
         return;
     }
+
+    acakArray(daftarSoal);   // ⬅️ acak ulang tiap mulai
+    nomor = 0;
     
     // Sembunyikan tampilan awal
     document.getElementById("area-awal").style.display = "none";
@@ -550,19 +563,40 @@ function waktuHabis() {
     }
 }
 
+// function buatPapanHuruf() {
+//     const papan = document.getElementById("papan-huruf");
+//     papan.innerHTML = "";
+//     for (let kode = 65; kode <= 90; kode++) {
+//         const huruf = String.fromCharCode(kode);
+//         const tombol = document.createElement("button");
+//         tombol.className = "btn-huruf";
+//         tombol.textContent = huruf;
+//         tombol.id = `huruf-${huruf}`;
+//         tombol.onclick = () => pilihHuruf(huruf);
+//         papan.appendChild(tombol);
+//     }
+// }
+
 function buatPapanHuruf() {
     const papan = document.getElementById("papan-huruf");
     papan.innerHTML = "";
+    
+    // ✅ Buat array A-Z lalu acak
+    const semuaHuruf = [];
     for (let kode = 65; kode <= 90; kode++) {
-        const huruf = String.fromCharCode(kode);
+        semuaHuruf.push(String.fromCharCode(kode));
+    }
+    acakArray(semuaHuruf);   // ⬅️ baris baru
+    
+    semuaHuruf.forEach(huruf => {
         const tombol = document.createElement("button");
         tombol.className = "btn-huruf";
         tombol.textContent = huruf;
         tombol.id = `huruf-${huruf}`;
         tombol.onclick = () => pilihHuruf(huruf);
         papan.appendChild(tombol);
-    }
-}
+    });
+}    
 
 function pilihHuruf(huruf) {
     if (sudahSelesai || hurufTerpakai.has(huruf) || sedangDijeda) return;
