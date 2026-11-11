@@ -1,0 +1,101 @@
+soal,jawaban,keterangan
+Aplikasi pengolah angka yang populer disebut?,MICROSOFTEXCEL,digunakan untuk laporan keuangan grafik dan analisis data
+Tombol yang menampilkan menu Baru Buka Simpan Cetak disebut?,OFFICEBUTTON,terdapat tombol New Open Save SaveAs Print dll
+Menu utama yang berisi perintah pemformatan dan pengeditan adalah?,HOME,berisi Clipboard Font Alignment Number Styles Cells Editing
+Bagian menu Home untuk memotong menyalin dan menempel data disebut?,CLIPBOARD,terdapat perintah Cut Copy Paste
+Bagian menu Home untuk mengubah jenis ukuran warna huruf disebut?,FONT,mengatur tampilan teks dalam sel
+Bagian menu Home untuk mengatur posisi teks di dalam sel disebut?,ALIGNMENT,penataan teks secara horizontal maupun vertikal
+Bagian menu Home untuk mengubah format angka menjadi mata uang atau persen disebut?,NUMBER,pengaturan tampilan nilai angka
+Menu untuk menambahkan elemen seperti gambar tabel grafik ke lembar kerja disebut?,INSERT,berisi Tables Illustrations Chart Links Text Symbols
+Menu untuk mengatur tata letak halaman sebelum dokumen dicetak disebut?,PAGELAYOUT,pengaturan margin orientasi ukuran kertas tema dll
+Menu untuk membuat mengelola dan memeriksa rumus disebut?,FORMulas,terdapat Function Library Defined Names Formula Auditing Calculation
+Bagian menu Formulas yang berisi kumpulan fungsi dikelompokkan disebut?,FUNCTIONLIBRARY,memudahkan pencarian fungsi sesuai kategori
+Bagian menu Formulas untuk memeriksa kesalahan rumus disebut?,FORMULAAUDITING,menelusuri sel yang digunakan dalam perhitungan
+Menu untuk mengolah menyaring dan menganalisis data disebut?,DATA,terdapat Sort Filter Validasi dll
+Menu untuk memberikan komentar melindungi dan melacak perubahan disebut?,REVIEW,terdapat Proofing Comments Changes
+Menu untuk mengatur tampilan lembar kerja memperbesar atau menyembunyikan elemen disebut?,VIEW,pengaturan tampilan jendela dan elemen layar
+Bagian menu View untuk menampilkan menyembunyikan Gridlines Formula Bar disebut?,SHOWHIDE,pengaturan elemen yang tampil di layar
+Bagian menu Page Layout untuk mengubah kombinasi warna dan font dokumen disebut?,THEME,agar tampilan konsisten dan menarik
+Perintah pada Office Button untuk menyimpan file dengan nama baru disebut?,SAVEAS,berbeda dengan Save yang memperbarui file lama
+Perintah pada Office Button untuk membuat dokumen baru disebut?,NEW,membuka workbook kosong yang belum ada isinya
+Perintah pada menu Data untuk mengurutkan data berdasarkan kriteria tertentu disebut?,SORT,biasanya digabungkan dengan Filter
+Tanda yang wajib digunakan di awal penulisan rumus excel adalah?,TANDASAMADENGAN,selalu diawali dengan =
+Ekspresi yang menghitung nilai dari satu atau beberapa sel disebut?,RUMUS,terdiri dari operator dan atau fungsi
+Simbol untuk operasi penjumlahan di excel adalah?,TANDAPLUS,contoh =A1+B1
+Simbol untuk operasi pengurangan di excel adalah?,TANDAMIN,contoh =A1-B1
+Simbol untuk operasi perkalian di excel adalah?,BINTANG,berbeda dengan matematika biasa contoh =A1*B1
+Simbol untuk operasi pembagian di excel adalah?,GARISMIRING,contoh =A1/B1
+Fungsi yang digunakan untuk menjumlahkan sekelompok nilai disebut?,SUM,contoh =SUM(A1:A10)
+Fungsi yang digunakan untuk mencari nilai rata-rata disebut?,AVERAGE,menjumlahkan lalu dibagi jumlah data
+Fungsi yang mengembalikan hasil berdasarkan kondisi tertentu disebut?,IF,contoh =IF(A1>B1"Besar""Kecil")
+Tanda yang digunakan untuk menggabungkan teks dari beberapa sel disebut?,DAN,simbol ampersand contoh =A1&B1
+Tanda yang digunakan untuk membungkus teks dalam rumus logika disebut?,TANDAPETIKGANDA,contoh "Lulus"
+Rumus =B4+C4+D4 berfungsi untuk melakukan penjumlahan?,ANTARKOLOM,menjumlahkan beberapa kolom dalam satu baris
+Fungsi untuk menjumlahkan data sekaligus menyembunyikan baris yang difilter disebut?,SUBTOTAL,penjumlahan data terlihat saja
+Angka 9 pada fungsi SUBTOTAL berarti fungsi?,PENJUMLAHAN,tanpa mengabaikan baris tersembunyi
+Angka 109 pada fungsi SUBTOTAL berarti penjumlahan?,MENGABAIKANBARISTERSEMBUNYI,hanya menjumlahkan yang terlihat
+Penjumlahan data dari lembar kerja lain disebut?,ANTARSHEET,contoh =Sheet2!A1
+Fungsi SUM(B4D4) setara dengan rumus penjumlahan?,B4C4D4,lebih singkat dan praktis digunakan
+Jika ingin menggabungkan teks A1 dan B1 dengan spasi di antaranya rumus yang benar adalah?,A1SPASIB1,atau =A1&" "&B1
+Apakah rumus excel hanya bisa menggunakan alamat sel saja?,TIDAK,bisa juga langsung menggunakan angka contoh =5+3
+Langkah terakhir setelah menuliskan rumus agar hasil muncul adalah?,TOMBOLENTER,menjalankan perhitungan rumus
+Fungsi yang digunakan untuk menjumlahkan sekelompok nilai disebut?,SUM,merupakan fungsi paling dasar penjumlahan
+Penulisan rumus untuk menjumlahkan sel B4 sampai D4 adalah?,SUMB4D4,atau =SUM(B4:D4)
+Penjumlahan data dari tabel berbeda pada sheet yang sama disebut?,RANGETERBEDAsamaSHEET,contoh =SUM(B4H4)
+Penjumlahan Buku Toko 1 Januari dan Februari B4 dan H4 rumusnya adalah?,SUMB4H4,atau =B4+H4
+Tanda pemisah argumen pada fungsi SUM di versi Indonesia adalah?,TITIKKOMA,memisahkan rentang yang tidak berdekatan
+Jika rentang berdekatan B4 sampai D4 pemisahnya menggunakan?,TITIKDUA,menunjukkan rentang dari sampai
+Fungsi SUBTOTAL9B4D4 artinya menjumlahkan semua data termasuk?,BARISTERSEMBUNYI,menjumlahkan seluruh rentang yang dipilih
+Fungsi SUBTOTAL109B4D4 hanya menjumlahkan data yang?,TERLIHATSAJA,baris tersembunyi tidak diikutkan
+Cara penjumlahan antar kolom dengan operator plus ditulis?,B4C4D4,tanpa fungsi tambahan
+Cara penjumlahan antar kolom dengan fungsi SUM ditulis?,SUMB4D4,lebih praktis untuk rentang panjang
+Penjumlahan data yang berada di lembar kerja berbeda disebut?,ANTARLEMBARKERJA,menambahkan nama lembar sebelum alamat sel
+Saat menyalin rumus ke bawah alamat sel akan berubah secara?,OTOMATIS,sesuai posisi baris tujuan
+Fungsi SUM termasuk dalam kelompok fungsi?,MATEMATIKADANTRIGONOMETRI,bersama fungsi matematika lainnya
+Apakah fungsi SUM hanya bisa satu rentang saja?,TIDAK,bisa beberapa rentang dipisah titik koma
+Keuntungan menggunakan SUM dibanding operator plus adalah?,LEBIHPRAKTIS,terutama untuk rentang yang panjang
+Rentang B4D4 berarti sel dari kolom B sampai D pada baris?,EMPAT,menunjukkan baris keempat
+Hasil penjumlahan B4C4D4 pada contoh Buku adalah?,SERATUSLIMA,40+45+20=105
+Jika data berubah maka hasil rumus SUM akan?,TERBARUOTOMATIS,tidak perlu mengetik ulang perhitungan
+Fungsi SUM hanya akan menghitung data berupa?,ANGKA,sel teks kosong diabaikan
+Penulisan fungsi SUM harus diawali dengan?,TANDASAMADENGAN,seperti rumus lainnya
+Fungsi SUMIF digunakan untuk menjumlahkan dengan berapa kriteria?,SATU,satu syarat saja
+Struktur penulisan fungsi SUMIF adalah?,SUMIFRANGEKRITERIASUMRANGE,tiga bagian utama
+Bagian Range pada SUMIF berfungsi sebagai?,TEMPATMENERAPKANSYARAT,rentang yang diperiksa
+Bagian Kriteria pada SUMIF berfungsi sebagai?,SYARATPENJUMLAHAN,menentukan sel mana yang dihitung
+Bagian Sum_range pada SUMIF bersifat?,OPSIONAL,boleh dituliskan boleh tidak
+Jika sum_range tidak dituliskan maka yang dijumlahkan adalah?,RANGEUTAMA,sama dengan rentang kriteria
+Kriteria berupa teks atau simbol perbandingan harus dibungkus dengan?,TANDAPETIKGANDA,contoh ">100"
+Kriteria berupa angka langsung ditulis tanpa tanda?,PETIK,contoh =SUMIF(A2A8100)
+Untuk mencari nilai lebih dari 100 kriteria ditulis?,LEBIGDARIDANSERATUS,atau ">100"
+Jika kriteria mengambil dari sel lain misal C5 maka rumusnya adalah?,C5,langsung alamat sel tanpa tanda petik
+Menggabungkan operator perbandingan dengan sel lain menggunakan tanda?,DAN,contoh ">"&C5
+Fungsi SUMIF termasuk kelompok fungsi?,MATEMATIKADANTRIGONOMETRI,sama dengan fungsi SUM
+Jika kriteria lebih dari 100 pada data 20050300100200100 hasilnya adalah?,TUJUHUNDRED,200+300+200=700
+Sel kosong atau teks pada bagian Range akan?,DIABAIKAN,tidak ikut diperiksa
+Apakah SUMIF bisa digunakan untuk teks sebagai kriteria?,BISA,contoh mencari nama barang tertentu
+Perbedaan utama SUMIF dan SUM adalah?,MEMILIKISYARAT,SUM menjumlahkan semua SUMIF ada syarat
+Apakah SUMIF peka terhadap huruf besar kecil?,TIDAK,menganggap huruf sama saja
+Jika kriteria tidak ada yang terpenuhi hasilnya adalah?,NOL,tidak ada yang dijumlahkan
+Argumen yang wajib ada pada SUMIF adalah?,RANGEDANKRITERIA,sum_range boleh kosong
+Penulisan kriteria sama dengan nilai C5 ditulis?,SAMADENGANC5,atau =C5
+Fungsi SUMIFS digunakan untuk penjumlahan dengan berapa kriteria?,BANYAK,satu syarat atau lebih
+Struktur penulisan SUMIFS adalah?,SUMIFSSUMRANGERANGESYARAT1SYARAT1,diikuti pasangan kriteria
+Bagian sum_range pada SUMIFS berfungsi sebagai?,NILAIDIJUMLAHKAN,harus selalu ditulis
+Bagian criteria_range1 berfungsi sebagai?,RENTAANGDIPERIKSA,pasangan pertama syarat
+Bagian criteria1 berfungsi sebagai?,SYARATPERTAMA,kondisi seleksi pertama
+Pasangan criteria_range2 dan criteria2 bersifat?,OPSIONAL,boleh ditambahkan boleh tidak
+Berapa jumlah pasangan kriteria maksimal yang bisa digunakan?,SESUAIBUTUHAN,hingga batas tertentu
+Pemisah antar argumen SUMIFS di versi Indonesia adalah?,TITIKKOMA,memisahkan setiap bagian
+Perbedaan utama SUMIF dan SUMIFS adalah?,JUMLAHSYARAT,SUMIF 1 syarat SUMIFS banyak syarat
+Jika hanya satu syarat apakah SUMIFS tetap bisa dipakai?,BISA,tetap berfungsi dengan baik
+Apakah urutan pasangan kriteria mempengaruhi hasil?,TIDAK,selama pasangan rentang dan syarat tepat
+Kriteria berupa teks dalam SUMIFS ditulis dengan?,TANDAPETIKGANDA,contoh "TOKO A"
+Jika semua kriteria tidak terpenuhi hasil SUMIFS adalah?,NOL,tidak ada data yang cocok
+Contoh kriteria Toko A dan Buku AA pada tabel contoh hasilnya adalah?,SERATUSLIMA,Pendapatan Toko A Buku AA Januari + Februari
+SUMIFS menjumlahkan data yang memenuhi?,SEMUASYARAT,harus memenuhi kriteria pertama dan kedua
+Apakah SUMIFS mengubah data asli?,TIDAK,hanya membaca dan menghitung
+Apakah sum_range boleh berupa rentang tidak berdekatan?,TIDAK,harus berupa satu rentang berkesinambungan
+Sel kosong pada sum_range akan dianggap sebagai?,NOL,dianggap bernilai 0 dalam perhitungan
+Apakah kriteria boleh berupa referensi sel?,BISA,langsung menuliskan alamat selnya
+Kelebihan utama SUMIFS dibanding rumus manual adalah?,OTOMATIS,data berubah hasil otomatis diperbarui
