@@ -593,11 +593,26 @@ function waktuHabis() {
     }
 }
 
-// ✅ BARU — Papan tombol: semua KARAKTER, urut, tidak diacak
+// ✅ BARU — Papan tombol adaptif sesuai isi jawaban
 function buatPapanHuruf() {
     const papan = document.getElementById("papan-huruf");
     papan.innerHTML = "";
-    KARAKTER.forEach(kar => {
+
+    // A–Z selalu tampil
+    const listKarakter = [...HURUF];
+
+    // Angka: tampil jika jawaban mengandung minimal satu angka
+    if (/[0-9]/.test(jawabanBenar)) {
+        listKarakter.push(...ANGKA);
+    }
+
+    // Simbol: tampil semua jika jawaban mengandung minimal satu simbol
+    const adaSimbol = SIMBOL.some(sim => jawabanBenar.includes(sim));
+    if (adaSimbol) {
+        listKarakter.push(...SIMBOL);
+    }
+
+    listKarakter.forEach(kar => {
         const tombol = document.createElement("button");
         tombol.className = "btn-huruf";
         tombol.textContent = kar;
@@ -694,11 +709,9 @@ function tampilkanJawabanLengkap() {
         bagianTerbentuk++;
     }
     // ✅ BARU — Highlight pakai KARAKTER (mencakup angka & simbol juga)
-    KARAKTER.forEach(kar => {
-        if (jawabanBenar.includes(kar)) {
-            const tombol = document.getElementById(`huruf-${kar}`);
-            if (tombol) tombol.classList.add("benar", "terpakai");
-        }
+        [...new Set(jawabanBenar)].forEach(kar => {
+        const tombol = document.getElementById(`huruf-${kar}`);
+        if (tombol) tombol.classList.add("benar", "terpakai");
     });
     const pesanEl = document.getElementById("pesan");
     pesanEl.textContent = "❌ Kesempatan habis! Jawaban: " + jawabanBenar;
