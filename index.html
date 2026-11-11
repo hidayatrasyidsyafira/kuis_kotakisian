@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tebak Kata Pembelajaran — Layout Baru</title>
+    <title>Tebak Kata Pembelajaran</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body {
@@ -43,7 +43,6 @@
         }
         .tombol-mulai-utama:hover { background: #27ae60; transform: scale(1.05); }
 
-        /* ✅ BARU — Lebar soal-box ditambah dari 850px → 1150px */
         .soal-box {
             background: white;
             padding: 25px 30px;
@@ -56,7 +55,6 @@
             display: none;
         }
 
-        /* ✅ BARU — .atas: 2 kolom (info kiri, hangman+abjad kanan) */
         .atas {
             display: flex;
             gap: 15px;
@@ -132,7 +130,6 @@
             font-weight: 500;
         }
 
-        /* ✅ BARU — Kanan: hangman + papan abjad sejajar */
         .kanan-area {
             display: flex;
             gap: 12px;
@@ -172,7 +169,6 @@
         .kaki-kiri { width: 4px; height: 35px; top: 130px; left: 50%; transform: translateX(-50%) rotate(-35deg); transform-origin: top center; }
         .kaki-kanan { width: 4px; height: 35px; top: 130px; left: 50%; transform: translateX(-50%) rotate(35deg); transform-origin: top center; }
 
-        /* ✅ BARU — Papan huruf/angka/karakter di kanan, sejajar hangman */
         .papan-huruf {
             display: flex;
             flex-wrap: wrap;
@@ -187,7 +183,6 @@
             box-sizing: border-box;
             flex: 0 0 auto;
         }
-        /* ✅ BARU — Tombol lebih kecil agar 54 karakter muat rapi */
         .btn-huruf {
             width: 30px; height: 30px;
             border: none; border-radius: 6px;
@@ -201,7 +196,6 @@
         .btn-huruf.benar { background: #2ecc71; }
         .btn-huruf.salah { background: #e74c3c; }
 
-        /* ✅ BARU — Kotak jawaban: flex-wrap untuk 2 baris */
         .kotak-besar {
             display: flex;
             flex-wrap: wrap;
@@ -287,7 +281,6 @@
             100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
         }
 
-        /* ✅ BARU — Mobile: susun ulang agar tidak meluber */
         @media (max-width: 720px) {
             .papan-huruf { width: 100%; }
             .kanan-area { flex-direction: column; align-items: stretch; width: 100%; }
@@ -297,7 +290,7 @@
     </style>
 </head>
 <body>
-    <h1>📝 Tebak Kata — Layout Baru</h1>
+    <h1>📝 Tebak Kata Pembelajaran</h1>
 
     <div class="awal-area" id="area-awal">
         <p>Selamat datang di kuis tebak kata! <br>Soal akan diacak setiap sesi. Siapkan dirimu, waktu akan berjalan saat mulai.</p>
@@ -319,7 +312,6 @@
             <button id="btn-mulai-jeda" onclick="toggleJeda()">⏸️ Jeda</button>
         </div>
 
-        <!-- ✅ BARU — .atas: info kiri, kanan-area berisi hangman + papan huruf -->
         <div class="atas">
             <div class="info-area">
                 <div class="info-baris">
@@ -382,16 +374,13 @@ const urutanBagian = ["bagian-1", "bagian-2", "bagian-3", "bagian-4",
                       "bagian-5", "bagian-6", "bagian-7", "bagian-8",
                       "bagian-9", "bagian-10"];
 
-// ✅ BARU — Daftar karakter papan tombol (A-Z, 0-9, simbol)
-const KARAKTER = [
-    ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    ..."0123456789",
-    "-", ".", "'", ",", "?", "!",
-    ":", ";", "/", "(", ")",
-    "&", "%", "@", "#", "*", "+", "="
-];
+// Tiga kategori karakter
+const HURUF  = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
+const ANGKA  = [..."0123456789"];
+const SIMBOL = ["-", ".", "'", ",", "?", "!", ":", ";", "/", "(", ")",
+                "&", "%", "@", "#", "*", "+", "="];
 
-// ✅ Fungsi acak array (Fisher-Yates Shuffle)
+// Fungsi acak array (Fisher-Yates Shuffle)
 function acakArray(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -508,7 +497,7 @@ function tampilSoal() {
     document.getElementById("btn-ulang").disabled = false;
     perbaruiInfoKesempatan();
 
-    // ✅ BARU — Bangun kotak: 1 baris (≤10) atau 2 baris (>10)
+    // Kotak jawaban: 1 baris (≤10) atau 2 baris (>10)
     const wadah = document.getElementById("wadah-kotak");
     wadah.innerHTML = "";
     const perRow = jumlahHuruf <= 10 ? jumlahHuruf : Math.ceil(jumlahHuruf / 2);
@@ -593,20 +582,17 @@ function waktuHabis() {
     }
 }
 
-// ✅ BARU — Papan tombol adaptif sesuai isi jawaban
+// Papan tombol adaptif: A-Z selalu; angka jika jawaban mengandung angka; simbol jika jawaban mengandung simbol
 function buatPapanHuruf() {
     const papan = document.getElementById("papan-huruf");
     papan.innerHTML = "";
 
-    // A–Z selalu tampil
     const listKarakter = [...HURUF];
 
-    // Angka: tampil jika jawaban mengandung minimal satu angka
     if (/[0-9]/.test(jawabanBenar)) {
         listKarakter.push(...ANGKA);
     }
 
-    // Simbol: tampil semua jika jawaban mengandung minimal satu simbol
     const adaSimbol = SIMBOL.some(sim => jawabanBenar.includes(sim));
     if (adaSimbol) {
         listKarakter.push(...SIMBOL);
@@ -708,8 +694,7 @@ function tampilkanJawabanLengkap() {
         document.getElementById(urutanBagian[bagianTerbentuk]).style.display = "block";
         bagianTerbentuk++;
     }
-    // ✅ BARU — Highlight pakai KARAKTER (mencakup angka & simbol juga)
-        [...new Set(jawabanBenar)].forEach(kar => {
+    [...new Set(jawabanBenar)].forEach(kar => {
         const tombol = document.getElementById(`huruf-${kar}`);
         if (tombol) tombol.classList.add("benar", "terpakai");
     });
